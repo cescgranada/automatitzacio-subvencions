@@ -86,12 +86,22 @@ def resumir_amb_ia(llista_text):
     return response.text
 
 def main():
-    dades = cercar_dogc() + cercar_boe()
+    # 1. Recollim dades de les 3 fonts oficials
+    # Recorda haver afegit les funcions cercar_dogc(), cercar_boe() i cercar_bopb()
+    dades = cercar_dogc() + cercar_boe() + cercar_bopb()
+    
+    # 2. La IA processa i filtra segons el perfil de l'Escola Nou Patufet
     resum = resumir_amb_ia("\n".join(dades))
     
+    # 3. Mostrem el resultat a la consola de GitHub (per a control)
     print(resum)
+    
+    # 4. Guardem una còpia de seguretat en un fitxer de text
     with open("ultim_resum.txt", "w", encoding="utf-8") as f:
         f.write(resum)
+    
+    # 5. Enviem el correu definitiu a la teva bústia
+    enviar_correu(resum)
 
 if __name__ == "__main__":
     main()
