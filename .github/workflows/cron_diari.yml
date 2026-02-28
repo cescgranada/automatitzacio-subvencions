@@ -1,0 +1,33 @@
+name: Execucio Diaria Subvencions
+
+on:
+  schedule:
+    # Això s'executa cada dia a les 08:00 AM (hora UTC)
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Això serveix per poder-lo activar tu manualment quan vulguis
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codi del repositori
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instal·lar llibreries necessaries
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar el script de subvencions
+        run: python monitor_subvencions.py
+
+      - name: Guardar el resum com a resultat (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: resum-subvencions
+          path: ultim_resum.txt
