@@ -18,6 +18,23 @@ def cercar_dogc():
         return items
     except: return []
 
+def cercar_bopb():
+    print("Consultant BOPB (Província i Ajuntament)...")
+    # Canal RSS del BOPB filtrat per subvencions
+    url = "https://bop.diba.cat/rss.asp?seccio=4.2"
+    try:
+        res = requests.get(url, timeout=10)
+        parser = etree.XMLParser(recover=True)
+        root = etree.fromstring(res.content, parser=parser)
+        items = []
+        for item in root.xpath("//item"):
+            titol = item.find('title').text
+            enllac = item.find('link').text
+            # Filtrem perquè a vegades el BOPB és molt genèric
+            items.append(f"BOPB/Ajuntament: {titol} ({enllac})")
+        return items
+    except: return []
+
 def cercar_boe():
     avui = datetime.now().strftime("%Y%m%d")
     url = f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{avui}"
