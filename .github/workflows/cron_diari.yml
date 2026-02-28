@@ -24,6 +24,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar el script de subvencions
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python monitor_subvencions.py
 
       - name: Guardar el resum com a resultat (Artifact)
