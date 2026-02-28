@@ -26,6 +26,9 @@ jobs:
       - name: Executar el script de subvencions
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
         run: python monitor_subvencions.py
 
       - name: Guardar el resum com a resultat (Artifact)
