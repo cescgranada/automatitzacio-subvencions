@@ -1,67 +1,70 @@
 import requests
-from lxml import etree # Canviem la llibreria per una de més potent
+import os
+from lxml import etree
 from datetime import datetime
+import google.generativeai as genai
+
+# Configura la IA (GitHub Actions agafarà la clau automàticament)
+API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=API_KEY)
 
 def cercar_dogc():
-    print("Consultant DOGC...")
     url = "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"
     try:
         res = requests.get(url, timeout=10)
-        # Fem servir un parser que ignora errors de caràcters (recover=True)
-        parser = etree.XMLParser(recover=True, encoding='utf-8')
-        root = etree.fromstring(res.content, parser=parser)
-        
-        items = []
-        # Al DOGC el format és una mica diferent amb lxml
-        for item in root.xpath("//item"):
-            titol = item.find('title').text
-            enllac = item.find('link').text
-            items.append(f"DOGC: {titol}\nLink: {enllac}\n")
-        return items
-    except Exception as e:
-        print(f"Error DOGC: {e}")
-        return []
-
-def cercar_boe():
-    print("Consultant BOE...")
-    avui = datetime.now().strftime("%Y%m%d")
-    url = f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{avui}"
-    
-    try:
-        res = requests.get(url, timeout=10)
-        if res.status_code != 200:
-            return ["BOE: Avui encara no hi ha dades publicades."]
-        
         parser = etree.XMLParser(recover=True)
         root = etree.fromstring(res.content, parser=parser)
-        
-        items = []
-        # Busquem secció 3
-        for seccio in root.xpath("//seccion[@num='3']"):
-            for anunci in seccio.xpath(".//item"):
-                titol = anunci.find("titulo").text
-                paraules_clau = ["subvención", "ayuda", "convocatoria", "subvencions"]
-                if any(p in titol.lower() for p in paraules_clau):
-                    link = "https://www.boe.es" + anunci.find("url_pdf").text
-                    items.append(f"BOE: {titol}\nLink: {link}\n")
+        items = [f"DOGC: {i.find('title').text} ({i.find('link').text})" for i in root.xpath("//item")[:15]]
         return items
-    except Exception as e:
-        print(f"Error BOE: {e}")
-        return []
+    except: return []
+
+def cercar_boe():
+    avui = datetime.now().strftime("%Y%m%d")
+    url = f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{avui}"
+    try:
+        res = requests.get(url, timeout=10)
+        if res.status_code != 200: return []
+        parser = etree.XMLParser(recover=True)
+        root = etree.fromstring(res.content, parser=parser)
+        items = []
+        for anunci in root.xpath("//seccion[@num='3']//item"):
+            titol = anunci.find("titulo").text
+            if any(p in titol.lower() for p in ["subvención", "ayuda", "convocatoria", "subvencions"]):
+                link = "https://www.boe.es" + anunci.find("url_pdf").text
+                items.append(f"BOE: {titol} ({link})")
+        return items
+    except: return []
+
+def resumir_amb_ia(llista_text):
+    if not llista_text: return "Avui no hi ha subvencions noves."
+    
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    # Aquí pots personalitzar el perfil!
+    perfil = "Sóc una PIME de tecnologia a Catalunya interessada en digitalització i sostenibilitat."
+    
+    prompt = f"""
+    Ets un expert en subvencions. He trobat aquestes publicacions avui al BOE i DOGC:
+    {llista_text}
+    
+    Basat en aquest perfil: {perfil}
+    Fes un resum executiu:
+    1. Selecciona només les que realment encaixin.
+    2. Explica breument què ofereixen i posa l'enllaç.
+    3. Si no n'hi ha cap d'interessant, digues-ho.
+    Respon en català i de forma molt concisa.
+    """
+    
+    response = model.generate_content(prompt)
+    return response.text
 
 def main():
-    subvencions = cercar_dogc() + cercar_boe()
+    dades = cercar_dogc() + cercar_boe()
+    resum = resumir_amb_ia("\n".join(dades))
     
-    if not subvencions:
-        resum_final = "No s'ha trobat cap subvenció rellevant avui."
-    else:
-        resum_final = f"--- RESUM DE SUBVENCIONS ({datetime.now().strftime('%d/%m/%Y')}) ---\n\n"
-        resum_final += "\n".join(subvencions)
-    
-    print(resum_final)
-    
+    print(resum)
     with open("ultim_resum.txt", "w", encoding="utf-8") as f:
-        f.write(resum_final)
+        f.write(resum)
 
 if __name__ == "__main__":
     main()
