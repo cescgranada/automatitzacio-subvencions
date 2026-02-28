@@ -2,8 +2,8 @@ name: Execucio Diaria Subvencions
 
 on:
   schedule:
-    # Això s'executa cada dia a les 08:00 AM (hora UTC)
-    - cron: '0 8 * * *'
+    # Això s'executa cada dia a les 05:30 AM (hora UTC)
+    - cron: '30 5 * * *'
   workflow_dispatch: # Això serveix per poder-lo activar tu manualment quan vulguis
 
 jobs:
