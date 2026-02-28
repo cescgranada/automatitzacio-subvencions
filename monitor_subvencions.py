@@ -41,7 +41,17 @@ def resumir_amb_ia(llista_text):
     model = genai.GenerativeModel('gemini-1.5-flash')
     
     # Aquí pots personalitzar el perfil!
-    perfil = "Sóc una PIME de tecnologia a Catalunya interessada en digitalització i sostenibilitat."
+    perfil = """
+    Som l'Escola Nou Patufet, una escola cooperativa situada a la Vila de Gràcia (Barcelona). 
+    Ens interessen especialment les subvencions i ajuts relacionats amb:
+    1. Educació infantil, primària i secundària.
+    2. Millores en infraestructures escolars, eficiència energètica o obres de reforma.
+    3. Projectes de digitalització i innovació pedagògica.
+    4. Ajuts a la contractació, formació del professorat o economia cooperativa.
+    5. Subvencions per a menjadors escolars, activitats extraescolars o sortides culturals.
+    6. Ajuts de l'Ajuntament de Barcelona o la Generalitat per a entitats del barri de Gràcia.
+    Si trobes alguna d'aquestes, explica breument què es demana, el termini i posa l'enllaç.
+    """
     
     prompt = f"""
     Ets un expert en subvencions. He trobat aquestes publicacions avui al BOE i DOGC:
