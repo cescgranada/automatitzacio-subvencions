@@ -1,65 +1,56 @@
-# 🤖 Cercador Automàtic de Subvencions (BOE, DOGC i Ajuntament)
+🤖 Cercador i Gestor Automàtic de Subvencions
+Aquest sistema és un "administratiu virtual" per a escoles i entitats. Cada matí revisa els diaris oficials (BOE, DOGC, BOPB), filtra les subvencions amb IA i, si en troba una de rellevant:
 
-Aquest sistema està dissenyat perquè qualsevol escola o entitat rebi cada matí un resum personalitzat de les subvencions oficials, analitzades per Intel·ligència Artificial segons el seu perfil.
+Et descarrega el PDF original.
 
----
+Omple una fitxa de Word amb el resum, l'import i els terminis.
 
-## 📋 Què necessites abans de començar?
+Ho guarda tot a la teva carpeta de Google Drive.
 
-Perquè el sistema funcioni, has d'aconseguir aquestes **4 dades** (només et portarà 5 minuts):
+📋 Requisits previs
+Necessitaràs tenir a mà:
 
-1. **Clau de la IA (Gemini):** Ves a [Google AI Studio](https://aistudio.google.com/), entra amb el teu compte de Google, clica a **"Get API key"** i copia el codi. És gratuït.
-2. **Correu de Gmail:** L'adreça des d'on s'enviaran els avisos.
-3. **Contrasenya d'Aplicació:** No és la teva clau de Gmail. Ves a [la teva conta de Google > Seguretat](https://myaccount.google.com/security), activa la "Verificació en dos passos" i busca l'apartat **"Contrasenyes d'aplicacions"**. Crea'n una anomenada "Subvencions" i copia el codi de 16 lletres que et donarà.
-4. **Correu Destinatari:** L'adreça on vols rebre el resum (pot ser la mateixa que la de Gmail).
+Google AI API Key: Aconsegueix-la gratis a Google AI Studio.
 
----
+Correu de Gmail i "Contrasenya d'aplicació": Per enviar els avisos.
 
-## 🚀 Pas a Pas per configurar-ho (Sense saber programar)
+Credencials de Google Cloud (JSON): Perquè el robot pugui escriure al teu Drive.
 
-### 1. Crear la teva pròpia còpia
+ID d'una carpeta de Drive: On es guardaran els documents.
 
-Clica el botó verd de la part superior d'aquesta pàgina que diu **"Use this template"** i tria l'opció **"Create a new repository"**. Posa-li el nom que vulguis i crea'l.
+🚀 Com configurar-ho (Pas a pas)
+1. Crear el teu repositori
+Clica el botó verd "Use this template" > "Create a new repository".
 
-### 2. Guardar les teves claus (Secrets)
+2. Configurar la teva Plantilla de Word
+Al teu repositori veuràs un fitxer anomenat plantilla_subvencio.docx.
 
-GitHub necessita les teves dades per treballar, però les mantindrà ocultes i segures.
+Pots descarregar-lo, posar-hi el teu logo i dissenyar-lo com vulguis, sempre que mantinguis aquestes etiquetes: {{titol}}, {{organisme}}, {{import}}, {{termini}}, {{resum}} i {{accions}}.
 
-1. Dins del teu nou repositori, ves a la pestanya superior **Settings**.
-2. Al menú de l'esquerra, clica a **Secrets and variables** > **Actions**.
-3. Clica el botó **New repository secret** i afegeix-ne quatre, un per un (posa el nom exactament igual):
-* **Nom:** `GEMINI_API_KEY` | **Valor:** (Enganxa la clau de Google AI)
-* **Nom:** `EMAIL_USER` | **Valor:** (El teu correu de Gmail)
-* **Nom:** `EMAIL_PASS` | **Valor:** (El codi de 16 lletres de Google)
-* **Nom:** `EMAIL_RECEIVER` | **Valor:** (El correu on vols rebre els avisos)
+3. Afegir les teves claus (Secrets)
+Ves a Settings > Secrets and variables > Actions i afegeix aquests 5 secrets:
 
+GEMINI_API_KEY: La teva clau de la IA.
 
+EMAIL_USER: El teu correu de Gmail.
 
-### 3. Personalitzar el teu Perfil (Qui ets i què busques?)
+EMAIL_PASS: El codi de 16 lletres de Google.
 
-Has de dir-li a la IA què t'interessa:
+EMAIL_RECEIVER: On vols rebre els avisos.
 
-1. Obre el fitxer `monitor_subvencions.py` cliquen sobre el nom.
-2. Clica l'icona del llapis (**Edit this file**).
-3. Busca la línia on diu `perfil = """`.
-4. Esborra el text de l'Escola Nou Patufet i escriu qui ets (escola, associació, autònom...) i quins ajuts t'interessen (obres, material escolar, cultura...).
-5. Clica el botó verd de dalt a la dreta **Commit changes**.
+GDRIVE_CREDENTIALS: El contingut sencer del fitxer JSON de Google Cloud.
 
-### 4. Activar l'automatització
+4. Personalitzar el perfil i la carpeta
+Edita el fitxer monitor_subvencions.py:
 
-Per seguretat, GitHub Actions ve "adormit" en les còpies.
+Canvia la variable GDRIVE_FOLDER_ID pel codi de la teva carpeta de Drive.
 
-1. Ves a la pestanya superior **Actions**.
-2. Clica el botó blau que diu **"I understand my workflows, go ahead and enable them"**.
+Canvia la variable perfil (dins la funció de la IA) per descriure la teva escola i què busques (ex: motxilles econòmiques, menjadors, etc.).
 
----
+5. Activar el robot
+Ves a la pestanya Actions i clica el botó blau per activar els permisos ("Enable Actions").
 
-## ⏰ Com funciona el servei?
+⏰ Què passarà a partir d'ara?
+Cada matí a les 07:30h, el robot treballarà per tu. Si troba una subvenció rellevant, rebràs un correu i tindràs la documentació a punt a la teva carpeta de Drive. Si no hi ha res d'interès, no s'omplirà la carpeta de brossa.
 
-* **Horari:** De dilluns a divendres a les **07:30h** (hora de Barcelona).
-* **Fonts:** Revisa automàticament el **BOE** (Estat), el **DOGC** (Generalitat) i el **BOPB** (Ajuntament de Barcelona i Diputació).
-* **Resultat:** Si troba alguna cosa rellevant, t'arriba un correu amb el resum de la IA i l'enllaç oficial. Si no hi ha res, t'envia un avís confirmant que tot està sota control.
-
----
-
-**Vols que fem una darrera comprovació per veure si tota la configuració de l'Escola Nou Patufet ha quedat lligada i tancada?**
+Consell d'expert: Recorda compartir la teva carpeta de Drive amb el correu de la "Service Account" de Google Cloud amb permís d'Editor, si no el robot no podrà guardar-hi els fitxers!
