@@ -1,33 +1,33 @@
-🤖 Cercador i Gestor Automàtic de Subvencions
-Aquest sistema és un "administratiu virtual" per a escoles i entitats. Cada matí revisa els diaris oficials (BOE, DOGC, BOPB), filtra les subvencions amb IA i, si en troba una de rellevant:
+🤖 Patu-Bot: Gestor Intel·ligent de Subvencions per a Escoles
+Aquest sistema és un administratiu virtual d'alt rendiment per a l'Escola Nou Patufet. El robot revisa diàriament els diaris oficials, selecciona oportunitats mitjançant Intel·ligència Artificial i genera tota la documentació prèvia per a la direcció del centre.
 
-Et descarrega el PDF original.
+🌟 Funcions Principals
+Monitoratge 360°: Escaneja el BOE (Estat), DOGC (Generalitat), BOPB (Ajuntament de Barcelona/Diputació) i portals de fons europeus (Erasmus+, Next Generation).
 
-Omple una fitxa de Word amb el resum, l'import i els terminis.
+Filtrat per IA (Gemini 1.5 Flash): Selecciona només les subvencions que encaixen amb el perfil de l'escola (vulnerabilitat, motxilles econòmiques, infraestructures, etc.).
 
-Ho guarda tot a la teva carpeta de Google Drive.
+Generació de Fitxes: Omple automàticament una plantilla de Word (plantilla_subvencio.docx) amb les dades clau.
 
-📋 Requisits previs
-Necessitaràs tenir a mà:
+Arxiu al Drive: Guarda el PDF original i la fitxa de Word a la teva carpeta de Google Drive sense intervenció humana.
 
-Google AI API Key: Aconsegueix-la gratis a Google AI Studio.
+Alertes per Correu: Envia un resum executiu cada matí a les 07:30h.
 
-Correu de Gmail i "Contrasenya d'aplicació": Per enviar els avisos.
+📋 Requisits per a la instal·lació
+Si vols utilitzar aquesta plantilla al teu compte de GitHub, necessitaràs:
 
-Credencials de Google Cloud (JSON): Perquè el robot pugui escriure al teu Drive.
+Google AI API Key: Gratis a Google AI Studio.
 
-ID d'una carpeta de Drive: On es guardaran els documents.
+Gmail i "Contrasenya d'aplicació": Per l'enviament de correus.
 
-🚀 Com configurar-ho (Pas a pas)
-1. Crear el teu repositori
+Credencials de Google Cloud (JSON): Per la connexió amb Google Drive.
+
+ID de Carpeta de Drive: On es desaran els documents.
+
+🚀 Guia ràpida de configuració
+1. Preparar el Repositori
 Clica el botó verd "Use this template" > "Create a new repository".
 
-2. Configurar la teva Plantilla de Word
-Al teu repositori veuràs un fitxer anomenat plantilla_subvencio.docx.
-
-Pots descarregar-lo, posar-hi el teu logo i dissenyar-lo com vulguis, sempre que mantinguis aquestes etiquetes: {{titol}}, {{organisme}}, {{import}}, {{termini}}, {{resum}} i {{accions}}.
-
-3. Afegir les teves claus (Secrets)
+2. Configurar els Secrets de GitHub
 Ves a Settings > Secrets and variables > Actions i afegeix aquests 5 secrets:
 
 GEMINI_API_KEY: La teva clau de la IA.
@@ -36,21 +36,26 @@ EMAIL_USER: El teu correu de Gmail.
 
 EMAIL_PASS: El codi de 16 lletres de Google.
 
-EMAIL_RECEIVER: On vols rebre els avisos.
+EMAIL_RECEIVER: El correu on vols rebre els avisos.
 
 GDRIVE_CREDENTIALS: El contingut sencer del fitxer JSON de Google Cloud.
 
-4. Personalitzar el perfil i la carpeta
+3. Personalitzar el teu Perfil
 Edita el fitxer monitor_subvencions.py:
 
-Canvia la variable GDRIVE_FOLDER_ID pel codi de la teva carpeta de Drive.
+Busca la variable GDRIVE_FOLDER_ID i posa l'ID de la teva carpeta de Drive.
 
-Canvia la variable perfil (dins la funció de la IA) per descriure la teva escola i què busques (ex: motxilles econòmiques, menjadors, etc.).
+Busca la variable perfil i descriu la teva entitat (què busqueu i on sou).
 
-5. Activar el robot
-Ves a la pestanya Actions i clica el botó blau per activar els permisos ("Enable Actions").
+4. Personalitzar la Plantilla
+Descarrega el fitxer plantilla_subvencio.docx, adapta'l amb el teu logo i puja'l de nou. Assegura't de mantenir les etiquetes: {{titol}}, {{organisme}}, {{import}}, {{termini}}, {{resum}} i {{accions}}.
 
-⏰ Què passarà a partir d'ara?
-Cada matí a les 07:30h, el robot treballarà per tu. Si troba una subvenció rellevant, rebràs un correu i tindràs la documentació a punt a la teva carpeta de Drive. Si no hi ha res d'interès, no s'omplirà la carpeta de brossa.
+5. Activar el Cron (El rellotge)
+Ves a la pestanya Actions i clica el botó blau "Enable Actions".
 
-Consell d'expert: Recorda compartir la teva carpeta de Drive amb el correu de la "Service Account" de Google Cloud amb permís d'Editor, si no el robot no podrà guardar-hi els fitxers!
+⏰ Com funciona el calendari?
+El robot s'activa de dilluns a divendres a les 07:30h (CET).
+
+Si hi ha subvencions: Rebràs el resum i tindràs els fitxers al Drive.
+
+Si no hi ha res: Rebràs un correu confirmant que tot s'ha revisat però no hi ha novetats.
