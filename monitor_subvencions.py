@@ -86,9 +86,11 @@ def resumir_i_processar(llista_anuncis):
     
     perfil = """
     Som l'Escola Nou Patufet, una escola cooperativa de la Vila de Gràcia (Barcelona). 
-    Busquem ajuts per a: educació (infantil a secundària), infraestructures escolars, 
-    digitalització, menjadors, extraescolars, cultura, economia cooperativa i 
-    subvencions del Districte de Gràcia o l'Ajuntament de Barcelona.
+    Busquem especialment: 
+    1. Ajuts per a l'atenció de l'alumnat vulnerable i plans de xoc contra la segregació.
+    2. Finançament addicional per a centres (motxilles econòmiques, NESE, equitat).
+    3. Subvencions per a infraestructures, digitalització i menjadors.
+    4. Convocatòries de l'Ajuntament de Barcelona (Districte de Gràcia) i la Generalitat (Departament d'Educació).
     """
     
     prompt = f"""
