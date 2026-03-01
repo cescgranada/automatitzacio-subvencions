@@ -10,15 +10,14 @@ import google.generativeai as genai
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
+from docx import Document
 
-# 1. CONFIGURACIÓ DE LES CLAUS (GitHub Secrets)
+# 1. CONFIGURACIÓ
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
-
-# ID de la carpeta de Drive que m'has passat
 GDRIVE_FOLDER_ID = "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"
 
-# 2. FUNCIONS PER BUSCAR ALS DIARIS OFICIALS
+# 2. FUNCIONS DE CERCA (BOE, DOGC, BOPB)
 def cercar_dogc():
     url = "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"
     try:
@@ -33,7 +32,6 @@ def cercar_boe():
     url = f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{avui}"
     try:
         res = requests.get(url, timeout=10)
-        if res.status_code != 200: return []
         parser = etree.XMLParser(recover=True)
         root = etree.fromstring(res.content, parser=parser)
         items = []
@@ -51,101 +49,96 @@ def cercar_bopb():
         res = requests.get(url, timeout=10)
         parser = etree.XMLParser(recover=True)
         root = etree.fromstring(res.content, parser=parser)
-        return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "BOPB/Ajuntament"} for i in root.xpath("//item")]
+        return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "BOPB"} for i in root.xpath("//item")]
     except: return []
 
-# 3. FUNCIÓ PER GUARDAR EL PDF AL DRIVE
-def pujar_a_drive(url_pdf, nom_arxiu):
+# 3. FUNCIÓ PER OMPLIR LA PLANTILLA DE WORD
+def crear_fitxa_word(dades):
+    try:
+        doc = Document('plantilla_subvencio.docx')
+        for p in doc.paragraphs:
+            if '{{titol}}' in p.text: p.text = p.text.replace('{{titol}}', dades.get('titol', ''))
+            if '{{organisme}}' in p.text: p.text = p.text.replace('{{organisme}}', dades.get('organisme', ''))
+            if '{{import}}' in p.text: p.text = p.text.replace('{{import}}', dades.get('import', ''))
+            if '{{termini}}' in p.text: p.text = p.text.replace('{{termini}}', dades.get('termini', ''))
+            if '{{resum}}' in p.text: p.text = p.text.replace('{{resum}}', dades.get('resum', ''))
+            if '{{accions}}' in p.text: p.text = p.text.replace('{{accions}}', dades.get('accions', ''))
+        
+        buffer = io.BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+        return buffer
+    except Exception as e:
+        print(f"Error creant Word: {e}")
+        return None
+
+# 4. PUJAR A DRIVE
+def pujar_a_drive(contingut_binari, nom_arxiu, mimetype='application/pdf'):
     creds_json = os.getenv("GDRIVE_CREDENTIALS")
-    if not creds_json:
-        print("Error: No s'han trobat les credencials de Drive.")
-        return
-    
+    if not creds_json: return
     try:
         info = json.loads(creds_json)
         creds = service_account.Credentials.from_service_account_info(info)
         service = build('drive', 'v3', credentials=creds)
-
-        response = requests.get(url_pdf, timeout=20)
-        fh = io.BytesIO(response.content)
-
+        
+        fh = io.BytesIO(contingut_binari) if isinstance(contingut_binari, bytes) else contingut_binari
         file_metadata = {'name': nom_arxiu, 'parents': [GDRIVE_FOLDER_ID]}
-        media = MediaIoBaseUpload(fh, mimetype='application/pdf')
-        file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-        print(f"✅ Arxiu guardat al Drive amb ID: {file.get('id')}")
-    except Exception as e:
-        print(f"❌ Error pujant al Drive: {e}")
+        media = MediaIoBaseUpload(fh, mimetype=mimetype, resumable=True)
+        service.files().create(body=file_metadata, media_body=media).execute()
+    except Exception as e: print(f"Error Drive: {e}")
 
-# 4. LA INTEL·LIGÈNCIA ARTIFICIAL
-def resumir_i_processar(llista_anuncis):
-    if not llista_anuncis:
-        return "Avui no s'ha publicat cap subvenció nova."
-
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    text_per_analitzar = "\n".join([f"{a['font']}: {a['titol']} ({a['link']})" for a in llista_anuncis])
+# 5. IA I PROCESSAMENT
+def processar_amb_ia(llista):
+    if not llista: return "Avui no hi ha novetats.", []
     
-    perfil = """
-    Som l'Escola Nou Patufet, una escola cooperativa de la Vila de Gràcia (Barcelona). 
-    Busquem especialment: 
-    1. Ajuts per a l'atenció de l'alumnat vulnerable i plans de xoc contra la segregació.
-    2. Finançament addicional per a centres (motxilles econòmiques, NESE, equitat).
-    3. Subvencions per a infraestructures, digitalització i menjadors.
-    4. Convocatòries de l'Ajuntament de Barcelona (Districte de Gràcia) i la Generalitat (Departament d'Educació).
-    """
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    perfil = "Escola cooperativa a Gràcia. Busquem: motxilles econòmiques, pla de xoc, vulnerabilitat, infraestructures i digitalització."
     
     prompt = f"""
-    Ets un expert en subvencions. Analitza aquests anuncis:
-    {text_per_analitzar}
-    
-    Basat en aquest perfil: {perfil}
-    
-    1. Selecciona només les que siguin realment rellevants.
-    2. Fes un resum breu en català per a cadascuna.
-    3. Al final, indica exactament quins enllaços de PDF s'han de descarregar (posa'ls en una llista separada per comes).
+    Analitza: {json.dumps(llista)}
+    Perfil: {perfil}
+    Si una subvenció és rellevant, genera un objecte JSON per a cadascuna amb aquestes claus:
+    "titol", "organisme", "import", "termini", "resum", "accions", "link_pdf".
+    Respon NOMÉS amb el llistat JSON de les rellevants.
     """
     
-    response = model.generate_content(prompt)
-    resum = response.text
+    res = model.generate_content(prompt)
+    try:
+        # Netegem la resposta de la IA per si posa markdown
+        net = res.text.replace("```json", "").replace("```", "").strip()
+        subvencions_interessants = json.loads(net)
+    except: return res.text, []
 
-    # Intentem descarregar els PDFs que la IA ha considerat interessants
-    for anunci in llista_anuncis:
-        if anunci['link'] in resum:
-            nom_net = anunci['titol'][:50].replace("/", "-") + ".pdf"
-            pujar_a_drive(anunci['link'], nom_net)
+    for s in subvencions_interessants:
+        # 1. Guardem PDF original
+        pdf_res = requests.get(s['link_pdf'])
+        pujar_a_drive(pdf_res.content, f"Original_{s['titol'][:30]}.pdf")
+        
+        # 2. Creem i guardem Fitxa Word
+        word_buf = crear_fitxa_word(s)
+        if word_buf:
+            pujar_a_drive(word_buf, f"FITXA_{s['titol'][:30]}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
-    return resum
+    return "S'han trobat i arxivat subvencions rellevants. Revisa el Drive.", subvencions_interessants
 
-# 5. ENVIAMENT DE CORREU
-def enviar_correu(contingut):
+# 6. MAIL I MAIN
+def enviar_correu(text):
     sender = os.getenv("EMAIL_USER")
-    password = os.getenv("EMAIL_PASS")
-    receiver = os.getenv("EMAIL_RECEIVER")
-    
-    if not all([sender, password, receiver]): return
-    
-    msg = MIMEText(contingut, 'plain', 'utf-8')
-    msg['Subject'] = f"Subvencions Escola Nou Patufet - {datetime.now().strftime('%d/%m/%Y')}"
-    msg['From'] = sender
-    msg['To'] = receiver
-
+    passw = os.getenv("EMAIL_PASS")
+    dest = os.getenv("EMAIL_RECEIVER")
+    if not all([sender, passw, dest]): return
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = f"Subvencions Nou Patufet - {datetime.now().strftime('%d/%m/%Y')}"
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender, password)
-            server.sendmail(sender, receiver, msg.as_string())
-    except Exception as e:
-        print(f"Error enviant correu: {e}")
+            server.login(sender, passw)
+            server.sendmail(sender, dest, msg.as_string())
+    except: pass
 
-# 6. EXECUCIÓ PRINCIPAL
 def main():
-    print("Iniciant cerca de subvencions...")
     dades = cercar_dogc() + cercar_boe() + cercar_bopb()
-    resum = resumir_i_processar(dades)
-    
-    with open("ultim_resum.txt", "w", encoding="utf-8") as f:
-        f.write(resum)
-    
-    enviar_correu(resum)
-    print("Procés finalitzat correctament.")
+    resum_text, interessants = processar_amb_ia(dades)
+    enviar_correu(resum_text)
 
 if __name__ == "__main__":
     main()
