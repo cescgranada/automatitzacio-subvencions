@@ -3,6 +3,7 @@ import os
 import smtplib
 import io
 import json
+from bs4 import BeautifulSoup
 from email.mime.text import MIMEText
 from lxml import etree
 from datetime import datetime
@@ -12,30 +13,26 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from docx import Document
 
-# 1. CONFIGURACIÓ DE SEGURETAT (GitHub Secrets)
+# 1. CONFIGURACIÓ
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
-
-# ID de la carpeta de Drive de l'Escola Nou Patufet
 GDRIVE_FOLDER_ID = "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"
 
-# 2. FONTS DE DADES (BOE, DOGC, BOPB i EUROPA)
+# 2. FONTS PÚBLIQUES (RSS/XML)
 def cercar_dogc():
     url = "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"
     try:
         res = requests.get(url, timeout=10)
-        parser = etree.XMLParser(recover=True)
-        root = etree.fromstring(res.content, parser=parser)
-        return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "DOGC (Generalitat)"} for i in root.xpath("//item")]
+        root = etree.fromstring(res.content, etree.XMLParser(recover=True))
+        return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "DOGC"} for i in root.xpath("//item")]
     except: return []
 
 def cercar_europa():
     url = "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_subvencions_internacionals/index.rss"
     try:
         res = requests.get(url, timeout=10)
-        parser = etree.XMLParser(recover=True)
-        root = etree.fromstring(res.content, parser=parser)
-        return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "EUROPA / Internacional"} for i in root.xpath("//item")]
+        root = etree.fromstring(res.content, etree.XMLParser(recover=True))
+        return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "EUROPA"} for i in root.xpath("//item")]
     except: return []
 
 def cercar_boe():
@@ -43,14 +40,12 @@ def cercar_boe():
     url = f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{avui}"
     try:
         res = requests.get(url, timeout=10)
-        parser = etree.XMLParser(recover=True)
-        root = etree.fromstring(res.content, parser=parser)
+        root = etree.fromstring(res.content, etree.XMLParser(recover=True))
         items = []
         for anunci in root.xpath("//seccion[@num='3']//item"):
             titol = anunci.find("titulo").text
-            if any(p in titol.lower() for p in ["subvención", "ayuda", "convocatoria", "subvencions", "beca"]):
-                link = "https://www.boe.es" + anunci.find("url_pdf").text
-                items.append({"titol": titol, "link": link, "font": "BOE (Estat)"})
+            if any(p in titol.lower() for p in ["subvención", "ayuda", "beca", "convocatoria"]):
+                items.append({"titol": titol, "link": "https://www.boe.es" + anunci.find("url_pdf").text, "font": "BOE"})
         return items
     except: return []
 
@@ -58,125 +53,111 @@ def cercar_bopb():
     url = "https://bop.diba.cat/rss.asp?seccio=4.2"
     try:
         res = requests.get(url, timeout=10)
-        parser = etree.XMLParser(recover=True)
-        root = etree.fromstring(res.content, parser=parser)
+        root = etree.fromstring(res.content, etree.XMLParser(recover=True))
         return [{"titol": i.find('title').text, "link": i.find('link').text, "font": "BOPB (Barcelona)"} for i in root.xpath("//item")]
     except: return []
 
-# 3. GESTIÓ DE DOCUMENTS (WORD I DRIVE)
+# 3. FONTS PRIVADES (WEB SCRAPING)
+def cercar_privades():
+    fonts = [
+        {"nom": "Fundació la Caixa", "url": "https://fundacionlacaixa.org/ca/convocatories-socials-presentacio-projectes"},
+        {"nom": "Fundació Bofill", "url": "https://fundaciobofill.cat/crides"},
+        {"nom": "EduCaixa", "url": "https://educaixa.org/ca/convocatories"}
+    ]
+    resultats = []
+    for f in fonts:
+        try:
+            res = requests.get(f['url'], timeout=15)
+            soup = BeautifulSoup(res.text, 'html.parser')
+            # Extraiem només el text net de la web per no saturar la IA
+            text_net = ' '.join([p.get_text() for p in soup.find_all(['p', 'h2', 'h3'])])[:3000]
+            resultats.append({"titol": f"Web: {f['nom']}", "link": f['url'], "font": "PRIVADA", "contingut_web": text_net})
+        except: continue
+    return resultats
+
+# 4. GESTIÓ DE DOCUMENTS
 def crear_fitxa_word(dades):
     try:
         doc = Document('plantilla_subvencio.docx')
         for p in doc.paragraphs:
             for clau in ['titol', 'organisme', 'import', 'termini', 'resum', 'accions']:
-                placeholder = f"{{{{{clau}}}}}"
-                if placeholder in p.text:
-                    p.text = p.text.replace(placeholder, str(dades.get(clau, 'No especificat')))
-        
-        buffer = io.BytesIO()
-        doc.save(buffer)
-        buffer.seek(0)
-        return buffer
-    except Exception as e:
-        print(f"Error creant fitxa Word: {e}")
-        return None
+                if f'{{{{{clau}}}}}' in p.text:
+                    p.text = p.text.replace(f'{{{{{clau}}}}}', str(dades.get(clau, 'No indicat')))
+        buf = io.BytesIO()
+        doc.save(buf)
+        buf.seek(0)
+        return buf
+    except: return None
 
-def pujar_a_drive(contingut, nom_arxiu, mimetype='application/pdf'):
+def pujar_a_drive(contingut, nom, mimetype='application/pdf'):
     creds_json = os.getenv("GDRIVE_CREDENTIALS")
     if not creds_json: return
     try:
         info = json.loads(creds_json)
         creds = service_account.Credentials.from_service_account_info(info)
         service = build('drive', 'v3', credentials=creds)
-        
-        fh = io.BytesIO(contingut) if isinstance(contingut, bytes) else contingut
-        file_metadata = {'name': nom_arxiu, 'parents': [GDRIVE_FOLDER_ID]}
-        media = MediaIoBaseUpload(fh, mimetype=mimetype, resumable=True)
-        service.files().create(body=file_metadata, media_body=media).execute()
-        print(f"✅ Guardat al Drive: {nom_arxiu}")
-    except Exception as e:
-        print(f"❌ Error Drive ({nom_arxiu}): {e}")
+        media = MediaIoBaseUpload(io.BytesIO(contingut) if isinstance(contingut, bytes) else contingut, mimetype=mimetype, resumable=True)
+        service.files().create(body={'name': nom, 'parents': [GDRIVE_FOLDER_ID]}, media_body=media).execute()
+    except Exception as e: print(f"Error Drive: {e}")
 
-# 4. INTEL·LIGÈNCIA ARTIFICIAL (ANÀLISI I FILTRAT)
-def processar_subvencions(llista):
-    if not llista: return "Avui no s'ha trobat cap publicació als diaris oficials.", []
-    
+# 5. PROCESSAMENT IA
+def processar_ia(llista):
+    if not llista: return "Cap novetat.", []
     model = genai.GenerativeModel('gemini-1.5-flash')
     
     perfil = """
-    Som l'Escola Nou Patufet, una escola cooperativa de la Vila de Gràcia (Barcelona). 
-    Busquem especialment:
-    1. Ajuts per a l'atenció de l'alumnat vulnerable i fons de motxilles econòmiques (Pla de Xoc).
-    2. Subvencions del Departament d'Educació, Ajuntament de Barcelona i Districte de Gràcia.
-    3. Fons europeus (Erasmus+, Next Generation) per a digitalització, sostenibilitat o innovació.
-    4. Ajuts per a infraestructures escolars, menjadors i economia cooperativa.
+    Escola Nou Patufet (I3-4t ESO). Gràcia, Bcn. Cooperativa.
+    FILTRE EDAT: Només Infantil, Primària i ESO. Ignora Batxillerat i Universitat.
+    INTERESSOS: Vulnerabilitat (Motxilles/Pla de Xoc), Innovació, STEAM, Menjador, Infraestructures i Economia Social.
     """
     
-    prompt = f"""
-    Analitza aquesta llista de publicacions: {json.dumps(llista)}
-    Perfil de l'escola: {perfil}
+    prompt = f"Analitza: {json.dumps(llista)}. Perfil: {perfil}. Si és rellevant, genera un JSON pur (sense markdown) amb: titol, organisme, import, termini, resum, accions, link_pdf. Si no n'hi ha, respon []."
     
-    Si una subvenció és realment rellevant, genera un llistat en format JSON pur (sense markdown) on cada objecte tingui:
-    "titol", "organisme", "import", "termini", "resum", "accions", "link_pdf".
-    Si no n'hi ha cap de rellevant, respon exactament: []
-    """
-    
-    response = model.generate_content(prompt)
+    res = model.generate_content(prompt)
     try:
-        net = response.text.replace("```json", "").replace("```", "").strip()
+        net = res.text.replace("```json", "").replace("```", "").strip()
         interessants = json.loads(net)
-    except:
-        return "Error en l'anàlisi de dades o cap subvenció rellevante avui.", []
+    except: return "Error d'anàlisi.", []
 
     for s in interessants:
         try:
-            # 1. Guardem PDF original
-            pdf_res = requests.get(s['link_pdf'], timeout=20)
-            nom_base = s['titol'][:40].replace("/", "-").replace(" ", "_")
-            pujar_a_drive(pdf_res.content, f"ORIGINAL_{nom_base}.pdf")
+            # Pujem PDF si és un link directe, o capturem la web
+            nom_fitxer = s['titol'][:40].replace("/", "-")
+            if s['link_pdf'].endswith('.pdf'):
+                r = requests.get(s['link_pdf'], timeout=20)
+                pujar_a_drive(r.content, f"ORIGINAL_{nom_fitxer}.pdf")
             
-            # 2. Creem i guardem Fitxa Word
-            word_buf = crear_fitxa_word(s)
-            if word_buf:
-                pujar_a_drive(word_buf, f"FITXA_{nom_base}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        except Exception as e:
-            print(f"Error processant {s.get('titol')}: {e}")
+            w_buf = crear_fitxa_word(s)
+            if w_buf:
+                pujar_a_drive(w_buf, f"FITXA_{nom_fitxer}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        except: continue
+    return f"Trobades {len(interessants)} subvencions.", interessants
 
-    return f"S'han trobat {len(interessants)} subvencions rellevants.", interessants
-
-# 5. ENVIAMENT DE NOTIFICACIÓ
-def enviar_correu(text):
-    sender = os.getenv("EMAIL_USER")
-    passw = os.getenv("EMAIL_PASS")
-    dest = os.getenv("EMAIL_RECEIVER")
-    if not all([sender, passw, dest]): return
-    
+# 6. MAIL I MAIN
+def enviar_mail(text):
+    u, p, r = os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"), os.getenv("EMAIL_RECEIVER")
+    if not all([u, p, r]): return
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = f"Alerta Subvencions Nou Patufet - {datetime.now().strftime('%d/%m/%Y')}"
-    msg['From'] = sender
-    msg['To'] = dest
-
+    msg['Subject'] = f"Subvencions Nou Patufet {datetime.now().strftime('%d/%m/%Y')}"
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender, passw)
-            server.sendmail(sender, dest, msg.as_string())
-    except Exception as e:
-        print(f"Error enviant mail: {e}")
+            server.login(u, p)
+            server.sendmail(u, r, msg.as_string())
+    except: pass
 
-# 6. EXECUCIÓ PRINCIPAL
 def main():
-    print("Iniciant escaneig (BOE, DOGC, BOPB, EUROPA)...")
-    dades = cercar_dogc() + cercar_europa() + cercar_boe() + cercar_bopb()
-    resum_text, interessants = processar_subvencions(dades)
+    print("Escanejant fonts públiques i privades...")
+    dades = cercar_dogc() + cercar_europa() + cercar_boe() + cercar_bopb() + cercar_privades()
+    resum, interessants = processar_ia(dades)
     
     if interessants:
-        cos_mail = "S'han trobat oportunitats per a la Nou Patufet:\n\n"
+        cos = "Noves oportunitats per a la Nou Patufet:\n\n"
         for s in interessants:
-            cos_mail += f"- {s['titol']}\n  Import: {s['import']}\n  Link: {s['link_pdf']}\n\n"
-        cos_mail += "Documents i fitxes guardades al Drive."
-        enviar_correu(cos_mail)
+            cos += f"- {s['titol']} ({s['organisme']})\n  Import: {s['import']}\n\n"
+        cos += "Documents al Drive."
+        enviar_mail(cos)
     else:
-        enviar_correu("Avui no hi ha novetats rellevants per a l'escola.")
+        enviar_mail("Avui no hi ha novetats rellevants.")
 
 if __name__ == "__main__":
     main()
