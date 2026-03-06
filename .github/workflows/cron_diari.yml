@@ -1,10 +1,13 @@
-name: Execucio Diaria Subvencions Nou Patufet
+name: Execucio Diaria Patu-Bot Nou Patufet
 
 on:
   schedule:
-    # S'executa cada dia a les 05:30 AM UTC (06:30 AM o 07:30 AM a Gràcia segons l'horari d'estiu/hivern)
+    # S'executa cada dia a les 05:30 AM UTC (06:30 AM o 07:30 AM hora local)
     - cron: '30 5 * * *'
   workflow_dispatch: # Permet l'execució manual des de la pestanya Actions
+
+permissions:
+  contents: write # Permís crucial per poder guardar l'historial de duplicats al repositori
 
 jobs:
   build:
@@ -12,6 +15,8 @@ jobs:
     steps:
       - name: Baixar codi del repositori
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -23,11 +28,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Executar el script de subvencions
+      - name: Executar el Patu-Bot
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
-          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }} # Afegit per a la connexió amb Drive
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
         run: python monitor_subvencions.py
+
+      - name: Guardar historial de duplicats
+        run: |
+          git config --global user.name "Patu-bot"
+          git config --global user.email "bot@noupatufet.cat"
+          # Afegim el fitxer d'historial si s'ha creat o modificat
+          git add historial_subvencions.json || true
+          # Fem el commit només si hi ha canvis, per evitar errors
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Actualitzar historial de subvencions [skip ci]" && git push)
