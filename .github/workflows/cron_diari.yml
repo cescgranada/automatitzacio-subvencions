@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Permet l'execució manual des de la pestanya Actions
 
 permissions:
-  contents: write # Permís crucial per poder guardar l'historial de duplicats al repositori
+  contents: write # Permís necessari per guardar l'historial de duplicats al repositori
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.12' # Actualitzat a la versió estable més recent
 
       - name: Instal·lar llibreries necessaries
         run: |
@@ -43,5 +43,10 @@ jobs:
           git config --global user.email "bot@noupatufet.cat"
           # Afegim el fitxer d'historial si s'ha creat o modificat
           git add historial_subvencions.json || true
-          # Fem el commit només si hi ha canvis, per evitar errors
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Actualitzar historial de subvencions [skip ci]" && git push)
+          # Fem el commit només si hi ha canvis reals per evitar errors de Git
+          if git diff --staged --quiet; then
+            echo "No hi ha canvis en l'historial."
+          else
+            git commit -m "Actualitzar historial de subvencions [skip ci]"
+            git push
+          fi
