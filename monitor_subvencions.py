@@ -21,7 +21,7 @@ client = genai.Client(api_key=API_KEY)
 GDRIVE_FOLDER_ID = "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"
 HISTORIAL_FILE = "historial_subvencions.json"
 
-# 2. FUNCIONS DE MEMÒRIA
+# 2. MEMÒRIA
 def carregar_historial():
     if os.path.exists(HISTORIAL_FILE):
         try:
@@ -34,20 +34,20 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA AVANÇADA AMB CAMUFLATGE
+# 3. CERCA D'ALT RENDIMENT (ANTI-BLOQUEIG)
 def cercar_fonts():
-    session = requests.Session()
+    # Simulació total d'un navegador humà modern
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'ca,es;q=0.9,en;q=0.8',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Referer': 'https://www.google.com/'
     }
     
-    # URLs actualitzades a rutes més directes
+    # Rutes actualitzades a les webs de llistat directe (evitem RSS problemàtics)
     fonts = [
         ("DOGC Subvencions", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"),
         ("DOGC Europa", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_subvencions_internacionals/index.rss"),
-        ("BOPB Barcelona", "https://bop.diba.cat/rss.asp?seccio=4.2"),
+        ("BOPB Barcelona", "https://bop.diba.cat/scripts/ftp.asp?codi=04.02"), # Ruta directa de llistat
         ("BOE Estat", f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{datetime.now().strftime('%Y%m%d')}"),
         ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials-presentacio-projectes"),
         ("Fundació Bofill", "https://fundaciobofill.cat/crides"),
@@ -58,23 +58,27 @@ def cercar_fonts():
 
     for nom, url in fonts:
         try:
-            time.sleep(random.uniform(2, 5)) # Pausa per no semblar un bot
-            res = session.get(url, timeout=25, headers=headers)
+            # Espera aleatòria per enganyar els sistemes anti-bot
+            time.sleep(random.uniform(3, 7))
+            res = requests.get(url, timeout=30, headers=headers, allow_redirects=True)
             
             if res.status_code == 200:
                 ok.append(nom)
-                if "rss" in url or "xml" in url or "boe" in url.lower():
+                # Si és XML (BOE o RSS)
+                if "xml" in url or "rss" in url:
                     parser = etree.XMLParser(recover=True, encoding='utf-8')
                     root = etree.fromstring(res.content, parser=parser)
-                    items = root.xpath("//item") or root.xpath("//item")
+                    items = root.xpath("//item") or root.xpath("//anuncio")
                     for i in items[:20]:
                         t = i.findtext('title') or i.findtext('titulo') or "Sense títol"
                         l = i.findtext('link') or (("https://www.boe.es" + i.findtext('url_pdf')) if i.find('url_pdf') is not None else url)
                         totes.append({"titol": t, "link": l, "font": nom})
+                # Si és Web (Scraping de Fundacions o BOPB)
                 else:
                     soup = BeautifulSoup(res.text, 'html.parser')
-                    text = ' '.join([p.get_text() for p in soup.find_all(['p', 'h2', 'h3'])[:15]])
-                    totes.append({"titol": f"Web: {nom}", "link": url, "font": "PRIVADA", "contingut": text})
+                    # Busquem links i textos que semblin convocatòries
+                    textos = [t.get_text() for t in soup.find_all(['h2', 'h3', 'a']) if len(t.get_text()) > 10]
+                    totes.append({"titol": f"Resum Web: {nom}", "link": url, "font": "WEB_SCRAPING", "contingut": ' '.join(textos[:15])})
             else:
                 fails.append(f"{nom} ({res.status_code})")
         except Exception as e:
@@ -82,16 +86,18 @@ def cercar_fonts():
             
     return totes, ok, fails
 
-# 4. PROCESSAMENT IA
+# [Les funcions processar_ia, crear_fitxa_word, pujar_a_drive i enviar_mail es mantenen igual]
+# He ajustat 'processar_ia' per ser més tolerant amb les dades de web scraping
+
 def processar_ia(dades):
     if not dades: return "No hi ha dades.", [], 0
     historial = carregar_historial()
-    noves = [d for d in dades if d['titol'] not in historial and d['link'] not in historial]
+    noves = [d for d in dades if d['titol'] not in historial]
     
     if not noves: return "Sense novetats.", [], 0
 
-    perfil = "Escola Nou Patufet (I3-4t ESO). Cooperativa a Gràcia. Prioritats: 1.Concerts, 2.Cooperativa (ESS), 3.Convenis Districte, 4.Licitacions, 5.Erasmus+, 6.Equitat, 7.Laboral."
-    prompt = f"Analitza: {json.dumps(noves)}. Context: {perfil}. Respon JSON pur [] o llista d'objectes amb: titol, prioritat, organisme, import, termini, resum, accions, link_pdf."
+    perfil = "Escola Nou Patufet (I3-4t ESO). Cooperativa a Gràcia. Prioritats: 1.Concerts, 2.Cooperativa (ESS), 3.Convenis, 4.Licitacions, 5.Erasmus+, 6.Equitat, 7.Laboral."
+    prompt = f"Analitza aquestes dades: {json.dumps(noves)}. Context: {perfil}. Respon JSON pur [] o llista d'objectes amb: titol, prioritat, organisme, import, termini, resum, accions, link_pdf."
     
     try:
         response = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
@@ -107,7 +113,6 @@ def processar_ia(dades):
         
     return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
 
-# FUNCIONS DRIVE, WORD I MAIL (Simplificades per robustesa)
 def crear_fitxa_word(d):
     try:
         doc = Document('plantilla_subvencio.docx')
