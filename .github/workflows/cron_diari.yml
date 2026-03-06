@@ -1,20 +1,20 @@
-name: Execucio Diaria Subvencions
+name: Execucio Diaria Subvencions Nou Patufet
 
 on:
   schedule:
-    # Això s'executa cada dia a les 05:30 AM (hora UTC)
+    # S'executa cada dia a les 05:30 AM UTC (06:30 AM o 07:30 AM a Gràcia segons l'horari d'estiu/hivern)
     - cron: '30 5 * * *'
-  workflow_dispatch: # Això serveix per poder-lo activar tu manualment quan vulguis
+  workflow_dispatch: # Permet l'execució manual des de la pestanya Actions
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar codi del repositori
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configurar Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -29,10 +29,5 @@ jobs:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }} # Afegit per a la connexió amb Drive
         run: python monitor_subvencions.py
-
-      - name: Guardar el resum com a resultat (Artifact)
-        uses: actions/upload-artifact@v4
-        with:
-          name: resum-subvencions
-          path: ultim_resum.txt
