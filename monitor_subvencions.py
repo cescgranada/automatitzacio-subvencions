@@ -34,7 +34,7 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMB REINTENTS I CAMUFLATGE
+# 3. CERCA DE FONTS AMB REINTENTS
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
@@ -51,7 +51,6 @@ def cercar_fonts():
 
     for nom, url in fonts_config:
         success = False
-        # Triple intent per font
         for intent in range(3):
             try:
                 time.sleep(random.uniform(5, 10))
@@ -66,7 +65,6 @@ def cercar_fonts():
 
                 res = session.get(url, timeout=40, headers=headers)
                 
-                # Intent alternatiu si hi ha bloqueig
                 if res.status_code in [403, 404] and ("Caixa" in nom or "Edu" in nom):
                     res = session.get(f"https://webcache.googleusercontent.com/search?q=cache:{url}", timeout=30, headers=headers)
 
@@ -88,13 +86,11 @@ def cercar_fonts():
                     break
             except:
                 continue
-        
-        if not success:
-            fails.append(nom)
+        if not success: fails.append(nom)
             
     return totes, ok, fails
 
-# [Les funcions processar_ia, crear_fitxa_word, pujar_a_drive i enviar_mail es mantenen igual]
+# 4. PROCESSAMENT IA
 def processar_ia(dades):
     if not dades: return "No hi ha dades.", [], 0
     historial = carregar_historial()
@@ -114,12 +110,12 @@ def processar_ia(dades):
         try:
             nom_f = s['titol'][:45].replace("/", "-").strip()
             w_buf = crear_fitxa_word(s)
-            if w_buf:
-                pujar_a_drive(w_buf, f"PRIO{s['prioritat']}_{nom_f}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            if w_buf: pujar_a_drive(w_buf, f"PRIO{s['prioritat']}_{nom_f}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
         except: continue
         
     return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
 
+# 5. AUXILIARS (WORD, DRIVE, MAIL)
 def crear_fitxa_word(d):
     try:
         doc = Document('plantilla_subvencio.docx')
@@ -147,15 +143,29 @@ def enviar_mail(text):
             s.login(u, p); s.sendmail(u, r, msg.as_string())
     except: pass
 
+# 6. FUNCIÓ PRINCIPAL (CORREGIDA)
 def main():
     print("Iniciant Patu-bot v2026...")
     dades, ok, fails = cercar_fonts()
-    resum, interessants, n_reals = processar_ia(dades)
+    resum_ia, interessants, n_reals = processar_ia(dades) # Ara utilitzem n_reals
+    
     guardar_historial([d['titol'] for d in dades])
     
-    informe = f"--- INFORME DIARI PATU-BOT ---\n\n✅ OK ({len(ok)}): {', '.join(ok)}\n"
+    informe = f"--- INFORME DIARI PATU-BOT ---\n\n"
+    informe += f"✅ OK ({len(ok)}): {', '.join(ok)}\n"
     if fails: informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
-    informe += f"\nOportunitats: {len(interessants)}\nAnalitzades: {n_analitzades}\n\nSalutacions!"
+    
+    # Aquí hem corregit el NameError i les claus del format
+    informe += f"\nOportunitats detectades: {len(interessants)}\n"
+    informe += f"Publicacions noves analitzades: {n_reals}\n\n"
+    
+    if interessants:
+        for s in interessants:
+            informe += f"- [PRIO {s.get('prioritat','?')}] {s['titol']}\n"
+        informe += "\nLes fitxes estan disponibles al Drive."
+    
+    informe += "\nSalutacions!"
     enviar_mail(informe)
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
