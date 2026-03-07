@@ -34,12 +34,11 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMB ESTRATÈGIA DE SALT DE MURS
+# 3. CERCA DE FONTS AMB REINTENTS I CAMUFLATGE
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
     
-    # URLs optimitzades i més "netes"
     fonts_config = [
         ("DOGC Subvencions", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"),
         ("DOGC Europa", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_subvencions_internacionals/index.rss"),
@@ -51,55 +50,56 @@ def cercar_fonts():
     ]
 
     for nom, url in fonts_config:
-        try:
-            # Pausa més llarga i aleatòria
-            time.sleep(random.uniform(5, 12))
-            
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                'Accept': 'application/xml,application/rss+xml,text/html;q=0.9',
-                'Cache-Control': 'no-cache',
-                'Referer': 'https://www.google.com/'
-            }
+        success = False
+        # Triple intent per font
+        for intent in range(3):
+            try:
+                time.sleep(random.uniform(5, 10))
+                headers = {
+                    'User-Agent': random.choice([
+                        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                    ]),
+                    'Accept': 'application/xml,application/rss+xml,text/html;q=0.9',
+                    'Referer': 'https://www.google.com/'
+                }
 
-            # Si la font sol donar 403/404, intentem un truc de neteja de sessió
-            session.cookies.clear()
-            res = session.get(url, timeout=40, headers=headers, allow_redirects=True)
-            
-            # Si el mètode normal falla amb 403, intentem la versió "Google Cache" (només per HTML)
-            if res.status_code in [403, 404] and "fundacionlacaixa" in url:
-                url_cache = f"https://webcache.googleusercontent.com/search?q=cache:{url}"
-                res = session.get(url_cache, timeout=30, headers=headers)
+                res = session.get(url, timeout=40, headers=headers)
+                
+                # Intent alternatiu si hi ha bloqueig
+                if res.status_code in [403, 404] and ("Caixa" in nom or "Edu" in nom):
+                    res = session.get(f"https://webcache.googleusercontent.com/search?q=cache:{url}", timeout=30, headers=headers)
 
-            if res.status_code == 200:
-                ok.append(nom)
-                if "xml" in url or "rss" in url:
-                    parser = etree.XMLParser(recover=True, no_network=False)
-                    root = etree.fromstring(res.content, parser=parser)
-                    items = root.xpath("//item") or root.xpath("//anuncio")
-                    for i in items[:20]:
-                        t = i.findtext('title') or i.findtext('titulo') or "Sense títol"
-                        l = i.findtext('link') or (("https://www.boe.es" + i.findtext('url_pdf')) if i.findtext('url_pdf') else url)
-                        totes.append({"titol": t, "link": l, "font": nom})
-                else:
-                    soup = BeautifulSoup(res.text, 'html.parser')
-                    paragrafs = [p.get_text().strip() for p in soup.find_all(['p', 'h2', 'h3', 'a']) if len(p.get_text()) > 35]
-                    totes.append({"titol": f"Web: {nom}", "link": url, "font": "WEB", "contingut": ' '.join(paragrafs[:12])})
-            else:
-                fails.append(f"{nom} ({res.status_code})")
+                if res.status_code == 200:
+                    ok.append(nom)
+                    if "xml" in url or "rss" in url:
+                        parser = etree.XMLParser(recover=True)
+                        root = etree.fromstring(res.content, parser=parser)
+                        items = root.xpath("//item") or root.xpath("//anuncio")
+                        for i in items[:15]:
+                            t = i.findtext('title') or i.findtext('titulo') or "Sense títol"
+                            l = i.findtext('link') or (("https://www.boe.es" + i.findtext('url_pdf')) if i.findtext('url_pdf') else url)
+                            totes.append({"titol": t, "link": l, "font": nom})
+                    else:
+                        soup = BeautifulSoup(res.text, 'html.parser')
+                        textos = [p.get_text().strip() for p in soup.find_all(['p', 'h2', 'h3']) if len(p.get_text()) > 35]
+                        totes.append({"titol": f"Web: {nom}", "link": url, "font": "WEB", "contingut": ' '.join(textos[:10])})
+                    success = True
+                    break
+            except:
+                continue
         
-        except Exception:
-            fails.append(f"{nom} (Error)")
+        if not success:
+            fails.append(nom)
             
     return totes, ok, fails
 
-# 4. PROCESSAMENT IA
+# [Les funcions processar_ia, crear_fitxa_word, pujar_a_drive i enviar_mail es mantenen igual]
 def processar_ia(dades):
     if not dades: return "No hi ha dades.", [], 0
     historial = carregar_historial()
     noves = [d for d in dades if d['titol'] not in historial]
-    
-    if not noves: return "Sense novetats.", [], 0
+    if not noves: return "Cap novetat.", [], 0
 
     perfil = "Escola Nou Patufet (I3-4t ESO). Cooperativa. Prioritats: 1.Concerts, 2.Economia Social, 3.Convenis, 4.Licitacions, 5.Erasmus+, 6.Equitat, 7.Laboral."
     prompt = f"Analitza: {json.dumps(noves)}. Context: {perfil}. Respon JSON pur [] amb: titol, prioritat, organisme, import, termini, resum, accions, link_pdf."
@@ -120,7 +120,6 @@ def processar_ia(dades):
         
     return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
 
-# [LES FUNCIONS crear_fitxa_word, pujar_a_drive I enviar_mail ES MANTENEN IGUAL]
 def crear_fitxa_word(d):
     try:
         doc = Document('plantilla_subvencio.docx')
@@ -142,21 +141,21 @@ def pujar_a_drive(c, n, m):
 def enviar_mail(text):
     u, p, r = os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"), os.getenv("EMAIL_RECEIVER")
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = f"🚀 Patu-bot Report: {datetime.now().strftime('%d/%m/%Y')}"
+    msg['Subject'] = f"🚀 Patu-bot Informe: {datetime.now().strftime('%d/%m/%Y')}"
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
             s.login(u, p); s.sendmail(u, r, msg.as_string())
     except: pass
 
 def main():
-    print("Iniciant Patu-bot (Solució de Força)...")
+    print("Iniciant Patu-bot v2026...")
     dades, ok, fails = cercar_fonts()
     resum, interessants, n_reals = processar_ia(dades)
     guardar_historial([d['titol'] for d in dades])
     
     informe = f"--- INFORME DIARI PATU-BOT ---\n\n✅ OK ({len(ok)}): {', '.join(ok)}\n"
     if fails: informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
-    informe += f"\nOportunitats: {len(interessants)}\nAnalitzades: {n_reals}\n\nSalutacions!"
+    informe += f"\nOportunitats: {len(interessants)}\nAnalitzades: {n_analitzades}\n\nSalutacions!"
     enviar_mail(informe)
 
 if __name__ == "__main__": main()
