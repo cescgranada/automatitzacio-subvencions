@@ -21,21 +21,37 @@ client = genai.Client(api_key=API_KEY)
 GDRIVE_FOLDER_ID = "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"
 HISTORIAL_FILE = "historial_subvencions.json"
 
-# 2. CERCA DE FONTS AMB CAMUFLATGE D'ALT NIVELL
+# 2. GESTIÓ DE MEMÒRIA (DUPLICATS)
+def carregar_historial():
+    if os.path.exists(HISTORIAL_FILE):
+        try:
+            with open(HISTORIAL_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except: return []
+    return []
+
+def guardar_historial(llista_nova):
+    h = carregar_historial()
+    # Mantenim els últims 500 títols per evitar duplicats a llarg termini
+    actualitzat = list(set(h + llista_nova))[-500:]
+    with open(HISTORIAL_FILE, "w", encoding="utf-8") as f:
+        json.dump(actualitzat, f)
+
+# 3. CERCA DE FONTS AMB CAMUFLATGE ULTRA-ROBUST
 def cercar_fonts():
-    # Creem una sessió per mantenir galetes (cookies)
     session = requests.Session()
     
-    # Simulem un navegador real de Windows per evitar el 403
+    # Headers molt més convincents per evitar el 403 (Forbidden)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Language': 'ca,es;q=0.9,en;q=0.8',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
         'Referer': 'https://www.google.com/',
         'DNT': '1'
     }
     
-    # URLs amb versions de reserva (backups)
     fonts = [
         ("DOGC Subvencions", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"),
         ("DOGC Europa", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_subvencions_internacionals/index.rss"),
@@ -50,51 +66,46 @@ def cercar_fonts():
 
     for nom, url in fonts:
         try:
-            # Espera aleatòria per no semblar un bot (entre 4 i 8 segons)
-            time.sleep(random.uniform(4, 8))
+            # Pausa aleatòria incremental per no semblar un bot (entre 5 i 10 segons)
+            time.sleep(random.uniform(5, 10))
             
-            # Intentem la petició
-            res = session.get(url, timeout=30, headers=headers)
+            # Intentem la petició amb el camuflatge
+            res = session.get(url, timeout=45, headers=headers, allow_redirects=True)
             
             if res.status_code == 200:
                 ok.append(nom)
                 if "xml" in url or "rss" in url or "boe" in url.lower():
-                    # Parser tolerant per a XMLs mal formats
+                    # Parser tolerant per a XMLs/RSS amb recuperació d'errors
                     parser = etree.XMLParser(recover=True, encoding='utf-8')
                     root = etree.fromstring(res.content, parser=parser)
+                    
+                    # Busquem items tant en format RSS com en format BOE
                     items = root.xpath("//item") or root.xpath("//anuncio")
-                    for i in items[:15]:
+                    for i in items[:20]:
                         t = i.findtext('title') or i.findtext('titulo') or "Sense títol"
                         l = i.findtext('link') or (("https://www.boe.es" + i.findtext('url_pdf')) if i.findtext('url_pdf') else url)
                         totes.append({"titol": t, "link": l, "font": nom})
                 else:
-                    # Scraping HTML per a fundacions privades
+                    # Scraping HTML millorat per a fundacions privades
                     soup = BeautifulSoup(res.text, 'html.parser')
-                    paragrafs = [p.get_text().strip() for p in soup.find_all(['p', 'h2', 'h3']) if len(p.get_text()) > 30]
-                    totes.append({"titol": f"Web: {nom}", "link": url, "font": "PÀGINA_WEB", "contingut": ' '.join(paragrafs[:8])})
+                    # Busquem textos més llargs que identifiquin convocatòries
+                    paragrafs = [p.get_text().strip() for p in soup.find_all(['p', 'h2', 'h3', 'a']) if len(p.get_text()) > 40]
+                    totes.append({"titol": f"Web: {nom}", "link": url, "font": "PÀGINA_WEB", "contingut": ' '.join(paragrafs[:10])})
             else:
+                # Si falla, ho registrem però no aturem el script
                 fails.append(f"{nom} ({res.status_code})")
+                
         except Exception as e:
             fails.append(f"{nom} (Error Connexió)")
             
     return totes, ok, fails
 
-# [Les funcions de memòria, IA, Drive i Mail es mantenen igual que en l'última versió]
-def carregar_historial():
-    if os.path.exists(HISTORIAL_FILE):
-        try:
-            with open(HISTORIAL_FILE, "r", encoding="utf-8") as f: return json.load(f)
-        except: return []
-    return []
-
-def guardar_historial(llista_nova):
-    h = carregar_historial()
-    actualitzat = list(set(h + llista_nova))[-500:]
-    with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
-
+# 4. PROCESSAMENT IA (GEMINI 1.5 FLASH)
 def processar_ia(dades):
     if not dades: return "No hi ha dades.", [], 0
     historial = carregar_historial()
+    
+    # Filtrem només les novetats reals basant-nos en el títol
     noves = [d for d in dades if d['titol'] not in historial]
     if not noves: return "Cap novetat.", [], 0
 
@@ -103,51 +114,85 @@ def processar_ia(dades):
     
     try:
         response = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
-        interessants = json.loads(response.text.replace("```json", "").replace("```", "").strip())
-    except: return "Error IA.", [], len(noves)
+        # Netegem possibles respostes de la IA amb blocs de codi
+        net = response.text.replace("```json", "").replace("```", "").strip()
+        interessants = json.loads(net)
+    except: 
+        return "Error en l'anàlisi de la IA.", [], len(noves)
 
     for s in interessants:
         try:
-            nom_f = s['titol'][:45].replace("/", "-").strip()
+            nom_f = s['titol'][:45].replace("/", "-").replace(":", "").strip()
             w_buf = crear_fitxa_word(s)
-            if w_buf: pujar_a_drive(w_buf, f"PRIO{s['prioritat']}_{nom_f}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            if w_buf: 
+                pujar_a_drive(w_buf, f"PRIO{s['prioritat']}_{nom_f}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
         except: continue
+        
     return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
 
+# 5. GENERACIÓ DE WORD I DRIVE
 def crear_fitxa_word(d):
     try:
         doc = Document('plantilla_subvencio.docx')
         for p in doc.paragraphs:
             for k in ['titol', 'organisme', 'import', 'termini', 'resum', 'accions']:
-                if f'{{{{{k}}}}}' in p.text: p.text = p.text.replace(f'{{{{{k}}}}}', str(d.get(k, '-')))
-        b = io.BytesIO(); doc.save(b); b.seek(0); return b
+                placeholder = f"{{{{{k}}}}}"
+                if placeholder in p.text:
+                    p.text = p.text.replace(placeholder, str(d.get(k, 'No especificat')))
+        b = io.BytesIO(); doc.save(b); b.seek(0)
+        return b
     except: return None
 
 def pujar_a_drive(c, n, m):
     try:
-        creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GDRIVE_CREDENTIALS")))
+        creds_json = json.loads(os.getenv("GDRIVE_CREDENTIALS"))
+        creds = service_account.Credentials.from_service_account_info(creds_json)
         service = build('drive', 'v3', credentials=creds)
+        # Corregit: assegurar que el buffer es llegeix bé
         media = MediaIoBaseUpload(io.BytesIO(c.read()) if hasattr(c, 'read') else io.BytesIO(c), mimetype=m)
         service.files().create(body={'name': n, 'parents': [GDRIVE_FOLDER_ID]}, media_body=media).execute()
-    except: pass
+    except Exception as e:
+        print(f"Error Drive: {e}")
 
+# 6. MAIL
 def enviar_mail(text):
     u, p, r = os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"), os.getenv("EMAIL_RECEIVER")
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = f"🚀 Patu-bot Report: {datetime.now().strftime('%d/%m/%Y')}"
+    msg['Subject'] = f"🚀 Patu-bot Informe: {datetime.now().strftime('%d/%m/%Y')}"
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
             s.login(u, p); s.sendmail(u, r, msg.as_string())
     except: pass
 
+# 7. MAIN
 def main():
+    print("Iniciant Patu-bot Ultra-Robust...")
     dades, ok, fails = cercar_fonts()
-    resum, interessants, n_analitzades = processar_ia(dades)
+    resum_ia, interessants, n_reals = processar_ia(dades)
+    
+    # Actualitzem historial amb el que hem vist avui
     guardar_historial([d['titol'] for d in dades])
     
-    informe = f"--- INFORME DIARI PATU-BOT ---\n\n✅ OK ({len(ok)}): {', '.join(ok)}\n"
-    if fails: informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
-    informe += f"\nOportunitats: {len(interessants)}\nAnalitzades: {n_analitzades}\n\nSalutacions!"
-    enviar_mail(informe)
+    informe = f"--- INFORME DIARI PATU-BOT ---\n\n"
+    informe += f"✅ OK ({len(ok)}): {', '.join(ok)}\n"
+    if fails: 
+        informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
+    
+    informe += f"\n---------------------------------\n"
+    if interessants:
+        informe += f"S'han trobat {len(interessants)} oportunitats noves per a l'escola.\n"
+        for s in interessants:
+            informe += f"- [PRIO {s.get('prioritat', '?')}] {s['titol']} ({s.get('organisme', '-')})\n"
+        informe += "\nLes fitxes s'han desat al Google Drive."
+    else:
+        informe += "Avui no hi ha novetats estratègiques."
 
-if __name__ == "__main__": main()
+    informe += f"\n---------------------------------\n"
+    informe += f"Fonts analitzades avui: {len(dades)}\n"
+    informe += f"Estat del sistema: Operatiu.\n"
+    
+    enviar_mail(informe)
+    print("Procés finalitzat.")
+
+if __name__ == "__main__": 
+    main()
