@@ -34,17 +34,18 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMB SCRAPER API (PROXY RESIDENCIAL)
+# 3. CERCA DE FONTS (AMB NOVES URLs)
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
     
+    # Llista de webs actualitzada (Sense RSS trencats)
     fonts_config = [
-        ("DOGC Subvencions", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_ajuts_subvencions_i_beques/index.rss"),
-        ("DOGC Europa", "https://dogc.gencat.cat/ca/pdogc_canals_rss/pdogc_subvencions_internacionals/index.rss"),
-        ("BOPB Barcelona", "https://bop.diba.cat/rss.asp?seccio=4.2"),
+        # El CIDO agrupa tot el DOGC, BOPB i fons europeus de manera molt més estable
+        ("CIDO (DOGC, BOPB i Europa)", "https://cido.diba.cat/subvencions"),
         ("BOE Estat", f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{datetime.now().strftime('%Y%m%d')}"),
-        ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials-presentacio-projectes"),
+        # La Caixa va canviar el nom de la seva pàgina web
+        ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials"),
         ("Fundació Bofill", "https://fundaciobofill.cat/crides"),
         ("EduCaixa", "https://educaixa.org/ca/convocatories")
     ]
@@ -52,19 +53,18 @@ def cercar_fonts():
     for nom, url in fonts_config:
         try:
             if SCRAPER_API_KEY:
-                # Fem la petició a través del proxy de ScraperAPI per saltar bloquejos
-                payload = {'api_key': SCRAPER_API_KEY, 'url': url}
+                # Connexió via ScraperAPI per saltar bloquejos
+                payload = {'api_key': SCRAPER_API_KEY, 'url': url, 'render': 'true'}
                 res = session.get('http://api.scraperapi.com', params=payload, timeout=60)
             else:
-                # Si no hi ha clau, intentem connexió directa normal
                 headers = {'User-Agent': 'Mozilla/5.0'}
                 res = session.get(url, timeout=35, headers=headers)
 
             if res.status_code == 200:
                 ok.append(nom)
                 
-                # Processem la resposta segons si és XML (DOGC/BOE/BOPB) o Web (Fundacions)
-                if "xml" in url or "rss" in url or "boe" in url:
+                # Processem BOE (XML)
+                if "xml" in url or "boe" in url:
                     parser = etree.XMLParser(recover=True)
                     root = etree.fromstring(res.content, parser=parser)
                     items = root.xpath("//item") or root.xpath("//anuncio")
@@ -72,14 +72,15 @@ def cercar_fonts():
                         t = i.findtext('title') or i.findtext('titulo') or "Sense títol"
                         l = i.findtext('link') or (("https://www.boe.es" + i.findtext('url_pdf')) if i.findtext('url_pdf') else url)
                         totes.append({"titol": t, "link": l, "font": nom})
+                # Processem la resta (Web normal)
                 else:
                     soup = BeautifulSoup(res.text, 'html.parser')
-                    for element in soup.find_all(['a', 'h2', 'h3']):
+                    for element in soup.find_all(['a', 'h2', 'h3', 'h4']):
                         txt = element.get_text().strip()
-                        if len(txt) > 30 and any(k in txt.lower() for k in ['ajut', 'subvenció', 'beca', 'convocatòria', 'resolució']):
+                        if len(txt) > 30 and any(k in txt.lower() for k in ['ajut', 'subvenció', 'beca', 'convocatòria', 'resolució', 'programa']):
                             link = element.get('href') if element.name == 'a' else url
                             if link and not link.startswith('http'): 
-                                link = url + link
+                                link = "https://" + url.split('/')[2] + link
                             totes.append({"titol": txt, "link": link, "font": nom})
             else:
                 fails.append(f"{nom} ({res.status_code})")
