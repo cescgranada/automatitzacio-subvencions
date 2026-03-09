@@ -2,9 +2,8 @@ name: Execucio Diaria Patu-Bot Nou Patufet
 
 on:
   schedule:
-    # 08:00 UTC correspon a les 09:00h a Barcelona (hivern)
     - cron: '0 8 * * *'
-  workflow_dispatch: # Permet l'execució manual
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -31,6 +30,7 @@ jobs:
       - name: Executar el Patu-Bot
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
