@@ -2,12 +2,12 @@ name: Execucio Diaria Patu-Bot Nou Patufet
 
 on:
   schedule:
-    # S'executa cada dia a les 05:30 AM UTC (06:30 AM o 07:30 AM hora local)
-    - cron: '30 5 * * *'
-  workflow_dispatch: # Permet l'execució manual des de la pestanya Actions
+    # 08:00 UTC correspon a les 09:00h a Barcelona (hivern)
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Permet l'execució manual
 
 permissions:
-  contents: write # Permís necessari per guardar l'historial de duplicats al repositori
+  contents: write
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12' # Actualitzat a la versió estable més recent
+          python-version: '3.12'
 
       - name: Instal·lar llibreries necessaries
         run: |
@@ -41,12 +41,10 @@ jobs:
         run: |
           git config --global user.name "Patu-bot"
           git config --global user.email "bot@noupatufet.cat"
-          # Afegim el fitxer d'historial si s'ha creat o modificat
           git add historial_subvencions.json || true
-          # Fem el commit només si hi ha canvis reals per evitar errors de Git
           if git diff --staged --quiet; then
-            echo "No hi ha canvis en l'historial."
+            echo "Sense canvis a l'historial."
           else
-            git commit -m "Actualitzar historial de subvencions [skip ci]"
+            git commit -m "Actualització historial (9:00 AM) [skip ci]"
             git push
           fi
