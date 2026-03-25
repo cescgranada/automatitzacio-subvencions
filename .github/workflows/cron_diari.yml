@@ -5,6 +5,10 @@ on:
     - cron: '0 8 * * *'
   workflow_dispatch:
 
+# AFEGIM AIXÒ PER FER DESAPARÈIXER EL WARNING DE NODE.JS 20
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write
 
