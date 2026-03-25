@@ -16,7 +16,8 @@ from docx import Document
 
 # 1. CONFIGURACIÓ
 API_KEY = os.getenv("GEMINI_API_KEY")
-SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
+# Aprofitem la variable existent a GitHub per no haver de tocar l'arxiu de configuració YAML
+SCRAPINGBEE_API_KEY = os.getenv("SCRAPER_API_KEY") 
 client = genai.Client(api_key=API_KEY)
 GDRIVE_FOLDER_ID = "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"
 HISTORIAL_FILE = "historial_subvencions.json"
@@ -34,17 +35,14 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS (AMB NOVES URLs)
+# 3. CERCA DE FONTS AMB SCRAPINGBEE (NOU PROXY)
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
     
-    # Llista de webs actualitzada (Sense RSS trencats)
     fonts_config = [
-        # El CIDO agrupa tot el DOGC, BOPB i fons europeus de manera molt més estable
         ("CIDO (DOGC, BOPB i Europa)", "https://cido.diba.cat/subvencions"),
         ("BOE Estat", f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{datetime.now().strftime('%Y%m%d')}"),
-        # La Caixa va canviar el nom de la seva pàgina web
         ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials"),
         ("Fundació Bofill", "https://fundaciobofill.cat/crides"),
         ("EduCaixa", "https://educaixa.org/ca/convocatories")
@@ -52,10 +50,14 @@ def cercar_fonts():
 
     for nom, url in fonts_config:
         try:
-            if SCRAPER_API_KEY:
-                # Connexió via ScraperAPI per saltar bloquejos
-                payload = {'api_key': SCRAPER_API_KEY, 'url': url, 'render': 'true'}
-                res = session.get('http://api.scraperapi.com', params=payload, timeout=60)
+            if SCRAPINGBEE_API_KEY:
+                # Connexió via ScrapingBee
+                payload = {
+                    'api_key': SCRAPINGBEE_API_KEY, 
+                    'url': url,
+                    'render_js': 'false' # Així gastem només 1 crèdit per petició
+                }
+                res = session.get('https://app.scrapingbee.com/api/v1/', params=payload, timeout=60)
             else:
                 headers = {'User-Agent': 'Mozilla/5.0'}
                 res = session.get(url, timeout=35, headers=headers)
@@ -63,7 +65,6 @@ def cercar_fonts():
             if res.status_code == 200:
                 ok.append(nom)
                 
-                # Processem BOE (XML)
                 if "xml" in url or "boe" in url:
                     parser = etree.XMLParser(recover=True)
                     root = etree.fromstring(res.content, parser=parser)
@@ -72,7 +73,6 @@ def cercar_fonts():
                         t = i.findtext('title') or i.findtext('titulo') or "Sense títol"
                         l = i.findtext('link') or (("https://www.boe.es" + i.findtext('url_pdf')) if i.findtext('url_pdf') else url)
                         totes.append({"titol": t, "link": l, "font": nom})
-                # Processem la resta (Web normal)
                 else:
                     soup = BeautifulSoup(res.text, 'html.parser')
                     for element in soup.find_all(['a', 'h2', 'h3', 'h4']):
@@ -149,7 +149,7 @@ def enviar_mail(text):
 
 # 6. FUNCIÓ PRINCIPAL
 def main():
-    print("Iniciant Patu-bot v2026 PRO (amb ScraperAPI)...")
+    print("Iniciant Patu-bot v2026 PRO (amb ScrapingBee)...")
     dades, ok, fails = cercar_fonts()
     resum_ia, interessants, n_analitzades = processar_ia(dades)
     guardar_historial([d['titol'] for d in dades])
