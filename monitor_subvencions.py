@@ -16,7 +16,6 @@ from docx import Document
 
 # 1. CONFIGURACIÓ
 API_KEY = os.getenv("GEMINI_API_KEY")
-# Aprofitem la variable existent a GitHub per no haver de tocar l'arxiu de configuració YAML
 SCRAPINGBEE_API_KEY = os.getenv("SCRAPER_API_KEY") 
 client = genai.Client(api_key=API_KEY)
 GDRIVE_FOLDER_ID = "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"
@@ -35,7 +34,7 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMB SCRAPINGBEE (NOU PROXY)
+# 3. CERCA DE FONTS AMB SCRAPINGBEE
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
@@ -51,11 +50,10 @@ def cercar_fonts():
     for nom, url in fonts_config:
         try:
             if SCRAPINGBEE_API_KEY:
-                # Connexió via ScrapingBee
                 payload = {
                     'api_key': SCRAPINGBEE_API_KEY, 
                     'url': url,
-                    'render_js': 'false' # Així gastem només 1 crèdit per petició
+                    'render_js': 'false'
                 }
                 res = session.get('https://app.scrapingbee.com/api/v1/', params=payload, timeout=60)
             else:
@@ -77,7 +75,7 @@ def cercar_fonts():
                     soup = BeautifulSoup(res.text, 'html.parser')
                     for element in soup.find_all(['a', 'h2', 'h3', 'h4']):
                         txt = element.get_text().strip()
-                        if len(txt) > 30 and any(k in txt.lower() for k in ['ajut', 'subvenció', 'beca', 'convocatòria', 'resolució', 'programa']):
+                        if len(txt) > 30 and any(k in txt.lower() for k in ['ajut', 'subvenció', 'beca', 'convocatòria', 'resolució', 'programa', 'premi', 'crida']):
                             link = element.get('href') if element.name == 'a' else url
                             if link and not link.startswith('http'): 
                                 link = "https://" + url.split('/')[2] + link
@@ -90,7 +88,7 @@ def cercar_fonts():
             
     return totes, ok, fails
 
-# 4. IA AVANÇADA AMB GEMINI PRO
+# 4. IA AVANÇADA AMB GEMINI PRO (PERFIL RIGORÓS COOPERATIU I FEMINISTA)
 def processar_ia(dades):
     if not dades: return "No dades.", [], 0
     historial = carregar_historial()
@@ -98,8 +96,37 @@ def processar_ia(dades):
     noves = [d for d in dades if d['titol'] not in historial]
     if not noves: return "Cap novetat.", [], 0
 
-    perfil = "Escola Nou Patufet (I3-4t ESO). Cooperativa. Prioritats: 1.Concerts educatius, 2.Economia Social i Solidària (ESS), 3.Convenis Ajuntament, 4.Licitacions, 5.Erasmus+, 6.Equitat/Inclusió, 7.Laboral/Contractació."
-    prompt = f"Ets un expert en gestió escolar. Analitza aquestes dades: {json.dumps(noves)}. Context de l'escola: {perfil}. Respon JSON pur [] (sense cap text addicional ni format markdown) amb llista d'objectes: titol, prioritat (1 a 7), organisme, import, termini, resum, accions, link_pdf."
+    perfil = """
+    Escola Nou Patufet (I3 a 4t d'ESO). Som una COOPERATIVA d'ensenyament situada a Barcelona (barri de Gràcia). 
+    Busquem ajuts, premis i subvencions estrictament relacionats amb aquestes 9 línies prioritàries:
+    1. Economia Social i Solidària (ESS), Intercooperació i cooperativisme (ex: Enfortim l'ESS, ajuts a cooperatives per a reactivació o creació de xarxes).
+    2. Feminisme, igualtat de gènere, coeducació, prevenció de violències masclistes i projectes liderats per dones o per a dones.
+    3. Premis d'innovació pedagògica, impuls de la llengua catalana, cultura i arts a l'escola (ex: Premis Baldiri Reixac o similars).
+    4. Convocatòries generals de l'Ajuntament de Barcelona i Districtes en àmbits d'Educació, Cultura, Acció Comunitària, Cohesió Social, Participació i Civisme.
+    5. Concerts educatius i finançament reglat del Departament d'Educació de la Generalitat.
+    6. Convenis i Licitacions públiques on pugui participar una escola cooperativa.
+    7. Fons Europeus (especialment Erasmus+ per a escoles i projectes europeus d'innovació docent).
+    8. Equitat, inclusió educativa i foment de la diversitat cultural i funcional.
+    9. Ajuts laborals, de contractació, digitalització o formació contínua per a les persones treballadores de la cooperativa.
+    
+    CRITERI D'EXCLUSIÓ EXTREMAMENT RIGORÓS: Ignora completament subvencions per a agricultura, ramaderia, recerca universitària, infraestructures viàries, ajuts destinats exclusivament a grans empreses mercantils (SA/SL), beques individuals per a alumnes (menjador/transport), esport d'elit, o subvencions d'altres municipis que no siguin Barcelona ciutat, ni aquelles que no siguin d'abast català/estatal/europeu aplicable a Barcelona.
+    """
+    
+    prompt = f"""
+    Ets un expert analista en captació de fons per a escoles cooperatives. Analitza aquestes dades: {json.dumps(noves)}. 
+    Context de l'escola: {perfil}. 
+    Selecciona NOMÉS les oportunitats que encaixin clarament i indubtable amb el perfil de l'escola (és vital ser molt rigorós). 
+    Respon amb un JSON pur en format llista d'objectes [] (SENSE cap text addicional, SENSE etiquetes markdown ```json ni comentaris externs). 
+    Cada objecte ha de tenir EXACTAMENT aquestes claus: 
+    - titol (títol clar de l'ajut o premi)
+    - prioritat (número del 1 al 9 segons la línia del perfil on encaixa)
+    - organisme (qui ho convoca, ex: Ajuntament de Barcelona, Generalitat, Fundació X, etc.)
+    - import (dotació econòmica si s'esmenta, sinó "A consultar")
+    - termini (termini de presentació si s'esmenta, sinó "Obert")
+    - resum (2 o 3 línies explicant per què encaixa específicament amb la Nou Patufet com a escola cooperativa i/o pels seus valors)
+    - accions (quin és el primer pas a fer, documentació, registre, etc.)
+    - link_pdf (el link original a les bases o web).
+    """
     
     try:
         response = client.models.generate_content(model="gemini-1.5-pro", contents=prompt)
@@ -149,7 +176,7 @@ def enviar_mail(text):
 
 # 6. FUNCIÓ PRINCIPAL
 def main():
-    print("Iniciant Patu-bot v2026 PRO (amb ScrapingBee)...")
+    print("Iniciant Patu-bot v2026 PRO (amb ScrapingBee i Perfil Cooperatiu Rigorós)...")
     dades, ok, fails = cercar_fonts()
     resum_ia, interessants, n_analitzades = processar_ia(dades)
     guardar_historial([d['titol'] for d in dades])
