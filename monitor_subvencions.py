@@ -34,7 +34,7 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMB SCRAPINGBEE
+# 3. CERCA DE FONTS AMPLIADA (AMB NOVES FONTS ESTRATÈGIQUES)
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
@@ -44,17 +44,17 @@ def cercar_fonts():
         ("BOE Estat", f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{datetime.now().strftime('%Y%m%d')}"),
         ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials"),
         ("Fundació Bofill", "https://fundaciobofill.cat/crides"),
-        ("EduCaixa", "https://educaixa.org/ca/convocatories")
+        ("EduCaixa", "https://educaixa.org/ca/convocatories"),
+        # NOVES FONTS AFEGIDES:
+        ("Fundació Carulla (Cultura i Educació)", "https://fundaciocarulla.cat/premis-i-programes/"),
+        ("Fundació Banc Sabadell (Cultura/Innovació)", "https://www.fundacionbancosabadell.com/convocatorias/"),
+        ("Coòpolis (Economia Social BCN)", "https://www.bcn.ateneucooperatiu.cat/noticies/")
     ]
 
     for nom, url in fonts_config:
         try:
             if SCRAPINGBEE_API_KEY:
-                payload = {
-                    'api_key': SCRAPINGBEE_API_KEY, 
-                    'url': url,
-                    'render_js': 'false'
-                }
+                payload = {'api_key': SCRAPINGBEE_API_KEY, 'url': url, 'render_js': 'false'}
                 res = session.get('https://app.scrapingbee.com/api/v1/', params=payload, timeout=60)
             else:
                 headers = {'User-Agent': 'Mozilla/5.0'}
@@ -73,22 +73,27 @@ def cercar_fonts():
                         totes.append({"titol": t, "link": l, "font": nom})
                 else:
                     soup = BeautifulSoup(res.text, 'html.parser')
+                    # Busquem enllaços que continguin paraules clau proactives
+                    paraules_clau = [
+                        'ajut', 'subvenció', 'beca', 'convocatòria', 'resolució', 'programa', 
+                        'premi', 'crida', 'suport', 'dotació', 'cooperativa', 'gènere', 
+                        'pedagògic', 'educació', 'innovació'
+                    ]
                     for element in soup.find_all(['a', 'h2', 'h3', 'h4']):
                         txt = element.get_text().strip()
-                        if len(txt) > 30 and any(k in txt.lower() for k in ['ajut', 'subvenció', 'beca', 'convocatòria', 'resolució', 'programa', 'premi', 'crida']):
+                        if len(txt) > 25 and any(k in txt.lower() for k in paraules_clau):
                             link = element.get('href') if element.name == 'a' else url
                             if link and not link.startswith('http'): 
                                 link = "https://" + url.split('/')[2] + link
                             totes.append({"titol": txt, "link": link, "font": nom})
             else:
                 fails.append(f"{nom} ({res.status_code})")
-                
-        except Exception as e:
+        except:
             fails.append(f"{nom} (Timeout/Error)")
             
     return totes, ok, fails
 
-# 4. IA AVANÇADA AMB GEMINI PRO (PERFIL RIGORÓS COOPERATIU I FEMINISTA)
+# 4. IA AVANÇADA AMB GEMINI PRO (PERFIL "ADAPTABLE" I PROACTIU)
 def processar_ia(dades):
     if not dades: return "No dades.", [], 0
     historial = carregar_historial()
@@ -97,43 +102,30 @@ def processar_ia(dades):
     if not noves: return "Cap novetat.", [], 0
 
     perfil = """
-    Escola Nou Patufet (I3 a 4t d'ESO). Som una COOPERATIVA d'ensenyament situada a Barcelona (barri de Gràcia). 
-    Busquem ajuts, premis i subvencions estrictament relacionats amb aquestes 9 línies prioritàries:
-    1. Economia Social i Solidària (ESS), Intercooperació i cooperativisme (ex: Enfortim l'ESS, ajuts a cooperatives per a reactivació o creació de xarxes).
-    2. Feminisme, igualtat de gènere, coeducació, prevenció de violències masclistes i projectes liderats per dones o per a dones.
-    3. Premis d'innovació pedagògica, impuls de la llengua catalana, cultura i arts a l'escola (ex: Premis Baldiri Reixac o similars).
-    4. Convocatòries generals de l'Ajuntament de Barcelona i Districtes en àmbits d'Educació, Cultura, Acció Comunitària, Cohesió Social, Participació i Civisme.
-    5. Concerts educatius i finançament reglat del Departament d'Educació de la Generalitat.
-    6. Convenis i Licitacions públiques on pugui participar una escola cooperativa.
-    7. Fons Europeus (especialment Erasmus+ per a escoles i projectes europeus d'innovació docent).
-    8. Equitat, inclusió educativa i foment de la diversitat cultural i funcional.
-    9. Ajuts laborals, de contractació, digitalització o formació contínua per a les persones treballadores de la cooperativa.
+    Escola Nou Patufet (I3-4t ESO). Cooperativa de treball situada a Gràcia, Barcelona.
+    Som un centre compromès amb el feminisme, la coeducació i l'Economia Social i Solidària (ESS).
     
-    CRITERI D'EXCLUSIÓ EXTREMAMENT RIGORÓS: Ignora completament subvencions per a agricultura, ramaderia, recerca universitària, infraestructures viàries, ajuts destinats exclusivament a grans empreses mercantils (SA/SL), beques individuals per a alumnes (menjador/transport), esport d'elit, o subvencions d'altres municipis que no siguin Barcelona ciutat, ni aquelles que no siguin d'abast català/estatal/europeu aplicable a Barcelona.
+    ESTRATÈGIA DE Cerca (Sigues proactiu):
+    1. Directes: Subvencions per a escoles, concerts o cooperatives.
+    2. Adaptables: Convocatòries de cultura, gènere o barri on l'escola pugui presentar un projecte propi (ex: un taller d'arts, una xarxa cooperativa de barri, un pla d'igualtat).
+    3. Temàtiques clau: Feminisme, català, intercooperació, arts escèniques, sostenibilitat i inclusió.
+    
+    IMPORTANT: Si trobes una convocatòria que NO és específicament per a escoles però creus que la Nou Patufet hi pot encaixar (ex: "Premis a la creativitat ciutadana"), selecciona-la i explica al resum com es podria adaptar.
     """
     
     prompt = f"""
-    Ets un expert analista en captació de fons per a escoles cooperatives. Analitza aquestes dades: {json.dumps(noves)}. 
-    Context de l'escola: {perfil}. 
-    Selecciona NOMÉS les oportunitats que encaixin clarament i indubtable amb el perfil de l'escola (és vital ser molt rigorós). 
-    Respon amb un JSON pur en format llista d'objectes [] (SENSE cap text addicional, SENSE etiquetes markdown ```json ni comentaris externs). 
-    Cada objecte ha de tenir EXACTAMENT aquestes claus: 
-    - titol (títol clar de l'ajut o premi)
-    - prioritat (número del 1 al 9 segons la línia del perfil on encaixa)
-    - organisme (qui ho convoca, ex: Ajuntament de Barcelona, Generalitat, Fundació X, etc.)
-    - import (dotació econòmica si s'esmenta, sinó "A consultar")
-    - termini (termini de presentació si s'esmenta, sinó "Obert")
-    - resum (2 o 3 línies explicant per què encaixa específicament amb la Nou Patufet com a escola cooperativa i/o pels seus valors)
-    - accions (quin és el primer pas a fer, documentació, registre, etc.)
-    - link_pdf (el link original a les bases o web).
+    Ets un captador de fons professional per a entitats socials. Analitza: {json.dumps(noves)}. 
+    Context: {perfil}. 
+    Selecciona oportunitats amb mentalitat oberta però rigorosa. 
+    Respon JSON pur [] (SENSE markdown ni text extra) amb claus: 
+    titol, prioritat (1-9), organisme, import, termini, resum, accions, link_pdf.
     """
     
     try:
         response = client.models.generate_content(model="gemini-1.5-pro", contents=prompt)
         net = response.text.replace("```json", "").replace("```", "").strip()
         interessants = json.loads(net)
-    except Exception as e:
-        print(f"Error IA: {e}")
+    except:
         return "Error IA.", [], len(noves)
 
     for s in interessants:
@@ -146,7 +138,7 @@ def processar_ia(dades):
         
     return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
 
-# 5. GENERACIÓ DOCUMENTS I DRIVE
+# 5. GENERACIÓ DOCUMENTS I DRIVE (Igual que l'anterior)
 def crear_fitxa_word(d):
     try:
         doc = Document('plantilla_subvencio.docx')
@@ -168,25 +160,23 @@ def pujar_a_drive(c, n, m):
 def enviar_mail(text):
     u, p, r = os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"), os.getenv("EMAIL_RECEIVER")
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = f"🚀 Patu-bot Informe PRO: {datetime.now().strftime('%d/%m/%Y')}"
+    msg['Subject'] = f"🚀 Patu-bot Informe AMB FONTS NOVES: {datetime.now().strftime('%d/%m/%Y')}"
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
             s.login(u, p); s.sendmail(u, r, msg.as_string())
     except: pass
 
-# 6. FUNCIÓ PRINCIPAL
 def main():
-    print("Iniciant Patu-bot v2026 PRO (amb ScrapingBee i Perfil Cooperatiu Rigorós)...")
+    print("Iniciant Patu-bot v2026 PRO (Ampliat)...")
     dades, ok, fails = cercar_fonts()
     resum_ia, interessants, n_analitzades = processar_ia(dades)
     guardar_historial([d['titol'] for d in dades])
     
-    informe = f"--- INFORME DIARI PATU-BOT (PRO) ---\n\n"
+    informe = f"--- INFORME DIARI PATU-BOT (FONTS AMPLIADES) ---\n\n"
     informe += f"✅ OK ({len(ok)}): {', '.join(ok)}\n"
     if fails: informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
     informe += f"\nOportunitats detectades: {len(interessants)}\nPublicacions noves analitzades: {n_analitzades}\n\nSalutacions!"
     
     enviar_mail(informe)
-    print("Procés finalitzat correctament.")
 
 if __name__ == "__main__": main()
