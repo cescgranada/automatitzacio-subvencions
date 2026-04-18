@@ -34,7 +34,7 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMPLIADA (AMB NOVES FONTS ESTRATÈGIQUES)
+# 3. CERCA DE FONTS AMPLIADA (AMB URL CARULLA CORREGIDA)
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
@@ -45,8 +45,8 @@ def cercar_fonts():
         ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials"),
         ("Fundació Bofill", "https://fundaciobofill.cat/crides"),
         ("EduCaixa", "https://educaixa.org/ca/convocatories"),
-        # NOVES FONTS AFEGIDES:
-        ("Fundació Carulla (Cultura i Educació)", "https://fundaciocarulla.cat/premis-i-programes/"),
+        # URL de la Carulla actualitzada a l'arrel per evitar errors 404
+        ("Fundació Carulla (Cultura i Educació)", "https://fundaciocarulla.cat/"),
         ("Fundació Banc Sabadell (Cultura/Innovació)", "https://www.fundacionbancosabadell.com/convocatorias/"),
         ("Coòpolis (Economia Social BCN)", "https://www.bcn.ateneucooperatiu.cat/noticies/")
     ]
@@ -73,7 +73,6 @@ def cercar_fonts():
                         totes.append({"titol": t, "link": l, "font": nom})
                 else:
                     soup = BeautifulSoup(res.text, 'html.parser')
-                    # Busquem enllaços que continguin paraules clau proactives
                     paraules_clau = [
                         'ajut', 'subvenció', 'beca', 'convocatòria', 'resolució', 'programa', 
                         'premi', 'crida', 'suport', 'dotació', 'cooperativa', 'gènere', 
@@ -84,7 +83,9 @@ def cercar_fonts():
                         if len(txt) > 25 and any(k in txt.lower() for k in paraules_clau):
                             link = element.get('href') if element.name == 'a' else url
                             if link and not link.startswith('http'): 
-                                link = "https://" + url.split('/')[2] + link
+                                # Ens assegurem de muntar bé l'enllaç si és relatiu
+                                root_url = "https://" + url.split('/')[2]
+                                link = root_url + link if link.startswith('/') else root_url + '/' + link
                             totes.append({"titol": txt, "link": link, "font": nom})
             else:
                 fails.append(f"{nom} ({res.status_code})")
@@ -105,78 +106,7 @@ def processar_ia(dades):
     Escola Nou Patufet (I3-4t ESO). Cooperativa de treball situada a Gràcia, Barcelona.
     Som un centre compromès amb el feminisme, la coeducació i l'Economia Social i Solidària (ESS).
     
-    ESTRATÈGIA DE Cerca (Sigues proactiu):
+    ESTRATÈGIA DE CERCA (Sigues proactiu):
     1. Directes: Subvencions per a escoles, concerts o cooperatives.
     2. Adaptables: Convocatòries de cultura, gènere o barri on l'escola pugui presentar un projecte propi (ex: un taller d'arts, una xarxa cooperativa de barri, un pla d'igualtat).
-    3. Temàtiques clau: Feminisme, català, intercooperació, arts escèniques, sostenibilitat i inclusió.
-    
-    IMPORTANT: Si trobes una convocatòria que NO és específicament per a escoles però creus que la Nou Patufet hi pot encaixar (ex: "Premis a la creativitat ciutadana"), selecciona-la i explica al resum com es podria adaptar.
-    """
-    
-    prompt = f"""
-    Ets un captador de fons professional per a entitats socials. Analitza: {json.dumps(noves)}. 
-    Context: {perfil}. 
-    Selecciona oportunitats amb mentalitat oberta però rigorosa. 
-    Respon JSON pur [] (SENSE markdown ni text extra) amb claus: 
-    titol, prioritat (1-9), organisme, import, termini, resum, accions, link_pdf.
-    """
-    
-    try:
-        response = client.models.generate_content(model="gemini-1.5-pro", contents=prompt)
-        net = response.text.replace("```json", "").replace("```", "").strip()
-        interessants = json.loads(net)
-    except:
-        return "Error IA.", [], len(noves)
-
-    for s in interessants:
-        try:
-            nom_f = str(s.get('titol', 'Subvencio'))[:40].replace("/", "-").strip()
-            w_buf = crear_fitxa_word(s)
-            if w_buf: 
-                pujar_a_drive(w_buf, f"PRIO{s.get('prioritat', 'X')}_{nom_f}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        except: continue
-        
-    return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
-
-# 5. GENERACIÓ DOCUMENTS I DRIVE (Igual que l'anterior)
-def crear_fitxa_word(d):
-    try:
-        doc = Document('plantilla_subvencio.docx')
-        for p in doc.paragraphs:
-            for k in ['titol', 'organisme', 'import', 'termini', 'resum', 'accions']:
-                placeholder = f"{{{{{k}}}}}"
-                if placeholder in p.text: p.text = p.text.replace(placeholder, str(d.get(k, '-')))
-        b = io.BytesIO(); doc.save(b); b.seek(0); return b
-    except: return None
-
-def pujar_a_drive(c, n, m):
-    try:
-        creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GDRIVE_CREDENTIALS")))
-        service = build('drive', 'v3', credentials=creds)
-        media = MediaIoBaseUpload(io.BytesIO(c.read()) if hasattr(c, 'read') else io.BytesIO(c), mimetype=m)
-        service.files().create(body={'name': n, 'parents': [GDRIVE_FOLDER_ID]}, media_body=media).execute()
-    except: pass
-
-def enviar_mail(text):
-    u, p, r = os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"), os.getenv("EMAIL_RECEIVER")
-    msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = f"🚀 Patu-bot Informe AMB FONTS NOVES: {datetime.now().strftime('%d/%m/%Y')}"
-    try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
-            s.login(u, p); s.sendmail(u, r, msg.as_string())
-    except: pass
-
-def main():
-    print("Iniciant Patu-bot v2026 PRO (Ampliat)...")
-    dades, ok, fails = cercar_fonts()
-    resum_ia, interessants, n_analitzades = processar_ia(dades)
-    guardar_historial([d['titol'] for d in dades])
-    
-    informe = f"--- INFORME DIARI PATU-BOT (FONTS AMPLIADES) ---\n\n"
-    informe += f"✅ OK ({len(ok)}): {', '.join(ok)}\n"
-    if fails: informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
-    informe += f"\nOportunitats detectades: {len(interessants)}\nPublicacions noves analitzades: {n_analitzades}\n\nSalutacions!"
-    
-    enviar_mail(informe)
-
-if __name__ == "__main__": main()
+    3. Temàtiques clau: Feminisme, català, intercooper
