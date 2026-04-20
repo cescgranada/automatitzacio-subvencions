@@ -34,7 +34,7 @@ def guardar_historial(llista_nova):
     actualitzat = list(set(h + llista_nova))[-500:]
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f: json.dump(actualitzat, f)
 
-# 3. CERCA DE FONTS AMPLIADA (AMB URL CARULLA CORREGIDA)
+# 3. CERCA DE FONTS AMPLIADA
 def cercar_fonts():
     session = requests.Session()
     totes = []; ok = []; fails = []
@@ -45,7 +45,6 @@ def cercar_fonts():
         ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials"),
         ("Fundació Bofill", "https://fundaciobofill.cat/crides"),
         ("EduCaixa", "https://educaixa.org/ca/convocatories"),
-        # URL de la Carulla actualitzada a l'arrel per evitar errors 404
         ("Fundació Carulla (Cultura i Educació)", "https://fundaciocarulla.cat/"),
         ("Fundació Banc Sabadell (Cultura/Innovació)", "https://www.fundacionbancosabadell.com/convocatorias/"),
         ("Coòpolis (Economia Social BCN)", "https://www.bcn.ateneucooperatiu.cat/noticies/")
@@ -83,7 +82,6 @@ def cercar_fonts():
                         if len(txt) > 25 and any(k in txt.lower() for k in paraules_clau):
                             link = element.get('href') if element.name == 'a' else url
                             if link and not link.startswith('http'): 
-                                # Ens assegurem de muntar bé l'enllaç si és relatiu
                                 root_url = "https://" + url.split('/')[2]
                                 link = root_url + link if link.startswith('/') else root_url + '/' + link
                             totes.append({"titol": txt, "link": link, "font": nom})
@@ -94,7 +92,7 @@ def cercar_fonts():
             
     return totes, ok, fails
 
-# 4. IA AVANÇADA AMB GEMINI PRO (PERFIL "ADAPTABLE" I PROACTIU)
+# 4. IA AVANÇADA AMB GEMINI PRO
 def processar_ia(dades):
     if not dades: return "No dades.", [], 0
     historial = carregar_historial()
@@ -109,4 +107,53 @@ def processar_ia(dades):
     ESTRATÈGIA DE CERCA (Sigues proactiu):
     1. Directes: Subvencions per a escoles, concerts o cooperatives.
     2. Adaptables: Convocatòries de cultura, gènere o barri on l'escola pugui presentar un projecte propi (ex: un taller d'arts, una xarxa cooperativa de barri, un pla d'igualtat).
-    3. Temàtiques clau: Feminisme, català, intercooper
+    3. Temàtiques clau: Feminisme, català, intercooperació, arts escèniques, sostenibilitat i inclusió.
+    
+    CRITERI D'EXCLUSIÓ EXTREMAMENT RIGORÓS: Ignora completament subvencions per a agricultura, ramaderia, recerca universitària, infraestructures viàries, ajuts destinats exclusivament a grans empreses mercantils (SA/SL), beques individuals per a alumnes (menjador/transport), esport d'elit, o subvencions d'altres municipis que no siguin Barcelona ciutat o d'abast català/estatal aplicable.
+    
+    IMPORTANT: Si trobes una convocatòria que NO és específicament per a escoles però creus que la Nou Patufet hi pot encaixar (ex: "Premis a la creativitat ciutadana" o "Innovació cultural"), selecciona-la i explica al resum com es podria adaptar.
+    """
+    
+    prompt = f"""
+    Ets un captador de fons professional per a entitats socials i cooperatives. Analitza: {json.dumps(noves)}. 
+    Context: {perfil}. 
+    Selecciona oportunitats amb mentalitat oberta però rigorosa. 
+    Respon JSON pur [] (SENSE markdown ni text extra, SENSE comentaris) amb claus EXACTES: 
+    titol, prioritat (1-9), organisme, import, termini, resum, accions, link_pdf.
+    """
+    
+    try:
+        response = client.models.generate_content(model="gemini-1.5-pro", contents=prompt)
+        net = response.text.replace("```json", "").replace("```", "").strip()
+        interessants = json.loads(net)
+    except Exception as e:
+        print(f"Error IA: {e}")
+        return "Error IA.", [], len(noves)
+
+    for s in interessants:
+        try:
+            nom_f = str(s.get('titol', 'Subvencio'))[:40].replace("/", "-").strip()
+            w_buf = crear_fitxa_word(s)
+            if w_buf: 
+                pujar_a_drive(w_buf, f"PRIO{s.get('prioritat', 'X')}_{nom_f}.docx", 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        except: continue
+        
+    return f"Trobades {len(interessants)} oportunitats.", interessants, len(noves)
+
+# 5. GENERACIÓ DOCUMENTS I DRIVE
+def crear_fitxa_word(d):
+    try:
+        doc = Document('plantilla_subvencio.docx')
+        for p in doc.paragraphs:
+            for k in ['titol', 'organisme', 'import', 'termini', 'resum', 'accions']:
+                placeholder = f"{{{{{k}}}}}"
+                if placeholder in p.text: p.text = p.text.replace(placeholder, str(d.get(k, '-')))
+        b = io.BytesIO(); doc.save(b); b.seek(0); return b
+    except: return None
+
+def pujar_a_drive(c, n, m):
+    try:
+        creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GDRIVE_CREDENTIALS")))
+        service = build('drive', 'v3', credentials=creds)
+        media = MediaIoBaseUpload(io.BytesIO(c.read()) if hasattr(c, 'read') else io.BytesIO(c), mimetype=m)
+        service.files().create(body={'name': n, 'parents':
