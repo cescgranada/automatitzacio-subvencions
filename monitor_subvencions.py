@@ -156,4 +156,29 @@ def pujar_a_drive(c, n, m):
         creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GDRIVE_CREDENTIALS")))
         service = build('drive', 'v3', credentials=creds)
         media = MediaIoBaseUpload(io.BytesIO(c.read()) if hasattr(c, 'read') else io.BytesIO(c), mimetype=m)
-        service.files().create(body={'name': n, 'parents':
+        service.files().create(body={'name': n, 'parents': [GDRIVE_FOLDER_ID]}, media_body=media).execute()
+    except: pass
+
+def enviar_mail(text):
+    u, p, r = os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"), os.getenv("EMAIL_RECEIVER")
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = f"🚀 Patu-bot Informe AMB FONTS NOVES: {datetime.now().strftime('%d/%m/%Y')}"
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
+            s.login(u, p); s.sendmail(u, r, msg.as_string())
+    except: pass
+
+def main():
+    print("Iniciant Patu-bot v2026 PRO (Ampliat)...")
+    dades, ok, fails = cercar_fonts()
+    resum_ia, interessants, n_analitzades = processar_ia(dades)
+    guardar_historial([d['titol'] for d in dades])
+    
+    informe = f"--- INFORME DIARI PATU-BOT (FONTS AMPLIADES) ---\n\n"
+    informe += f"✅ OK ({len(ok)}): {', '.join(ok)}\n"
+    if fails: informe += f"⚠️ ERROR ({len(fails)}): {', '.join(fails)}\n"
+    informe += f"\nOportunitats detectades: {len(interessants)}\nPublicacions noves analitzades: {n_analitzades}\n\nSalutacions!"
+    
+    enviar_mail(informe)
+
+if __name__ == "__main__": main()
