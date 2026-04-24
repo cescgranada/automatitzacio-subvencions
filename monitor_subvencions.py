@@ -230,6 +230,9 @@ def processar_ia(dades: list[dict]) -> tuple[str, list[dict], int]:
             vistes.add(clau)
             noves_uniques.append(d)
 
+    print(f"  Enviant {len(noves_uniques)} ítems únics a Gemini...")
+    print(f"  Mida payload: {len(json.dumps(noves_uniques, ensure_ascii=False))} caràcters")
+
     prompt = f"""
 Ets un captador de fons professional per a entitats socials i cooperatives.
 
@@ -261,6 +264,7 @@ Si no hi ha cap oportunitat rellevant, retorna [].
 
     try:
         response = client.models.generate_content(model="gemini-1.5-pro", contents=prompt)
+        print(f"  Resposta Gemini (primers 500 car): {response.text[:500]}")
         net = response.text.replace("```json", "").replace("```", "").strip()
         # Gemini de vegades afegeix text abans del JSON
         inici = net.find("[")
