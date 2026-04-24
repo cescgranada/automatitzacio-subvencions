@@ -65,13 +65,12 @@ def guardar_historial(entrades: list[dict]):
     with open(HISTORIAL_FILE, "w", encoding="utf-8") as f:
         json.dump(h, f, ensure_ascii=False, indent=2)
 
-def es_nova(entrada: dict) -> bool:
+def es_nova(entrada: dict, historial: dict) -> bool:
     """Retorna True si l'entrada no ha aparegut en els últims DIES_REEXPOSA dies."""
-    h = carregar_historial()
     clau = entrada.get("link") or entrada.get("titol", "")
-    if clau not in h:
+    if clau not in historial:
         return True
-    primera = datetime.strptime(h[clau], "%Y-%m-%d")
+    primera = datetime.strptime(historial[clau], "%Y-%m-%d")
     return (datetime.now() - primera).days > DIES_REEXPOSA
 
 # ============================================================
@@ -214,8 +213,9 @@ def processar_ia(dades: list[dict]) -> tuple[str, list[dict], int]:
     if not dades:
         return "No dades.", [], 0
 
-    # Filtre per historial — respecta DIES_REEXPOSA
-    noves = [d for d in dades if es_nova(d)]
+    # Carrega l'historial una sola vegada per tot el filtratge
+    historial = carregar_historial()
+    noves = [d for d in dades if es_nova(d, historial)]
     n_analitzades = len(noves)
 
     if not noves:
@@ -263,7 +263,7 @@ Si no hi ha cap oportunitat rellevant, retorna [].
 """
 
     try:
-        response = client.models.generate_content(model="gemini-1.5-pro", contents=prompt)
+        response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
         print(f"  Resposta Gemini (primers 500 car): {response.text[:500]}")
         net = response.text.replace("```json", "").replace("```", "").strip()
         # Gemini de vegades afegeix text abans del JSON
