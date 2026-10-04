@@ -16,6 +16,8 @@ from . import config
 from .util import parse_data
 
 PAUSA_ENTRE_CRIDES = 4  # s — respecta el límit de la capa gratuïta de Gemini
+MAX_SEGONS_IA = 12 * 60  # pressupost total de la fase d'IA: passat això, s'atura i ho torna a provar demà
+_inici_ia: float | None = None
 
 
 # ---------------------------------------------------------------- esquemes
@@ -64,23 +66,30 @@ def _descobreix_models(client) -> list[str]:
 
 def _prova_models(client, models, prompt, cfg, errors):
     for model in models:
-        for intent in range(3):
+        for intent in range(2):
+            if time.monotonic() - _inici_ia > MAX_SEGONS_IA:
+                raise RuntimeError("pressupost de temps de la IA esgotat")
             try:
                 resp = client.models.generate_content(model=model, contents=prompt, config=cfg)
                 return json.loads(resp.text)
             except Exception as e:  # noqa: BLE001
                 errors.append(f"{model}: {str(e)[:160]}")
-                if any(x in str(e) for x in ("429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE")):
-                    time.sleep(20 * (intent + 1))
+                print(f"  [IA] {model} intent {intent + 1}: {str(e)[:200]}")
+                if intent == 0 and any(x in str(e) for x in ("429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE")):
+                    time.sleep(20)
                     continue
-                break  # error no recuperable amb aquest model (p. ex. 404: retirat) → següent model
+                break  # 404 (model retirat), quota esgotada o error greu → següent model
     return None
 
 
 def _crida(client, prompt: str, schema, models=None):
     """Prova els models configurats i, si tots fallen, els que Gemini diu que té disponibles."""
+    global _inici_ia
     from google.genai import types
-    cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=schema, temperature=0.2)
+    if _inici_ia is None:
+        _inici_ia = time.monotonic()
+    cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=schema, temperature=0.2,
+                                      http_options=types.HttpOptions(timeout=90_000))
     errors: list[str] = []
     res = _prova_models(client, models or config.GEMINI_MODELS, prompt, cfg, errors)
     if res is None:
