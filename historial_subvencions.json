@@ -1,4 +1,196 @@
 {
+  "boe:BOE-A-2026-20578": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-A-2026-20583": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-A-2026-20584": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31725": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31747": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31752": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31757": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31789": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31790": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31801": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31802": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31804": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31805": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31806": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31807": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31808": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31809": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31810": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31811": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31812": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31848": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31854": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31892": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31900": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31901": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31902": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31909": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31910": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31911": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-31912": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "boe:BOE-B-2026-32144": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/16994225": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/20457421": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/20499603": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/20673616": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/20814713": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/20924585": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/21072283": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/21863856": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/21874140": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22091063": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22120424": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22131185": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22143728": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22213473": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22229926": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/22229937": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "cido:https://cido.diba.cat/subvencions/9721324": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
   "http://fundaciocarulla.cat/la-fundacio/": {
     "resultat": "descartada",
     "vist": "2026-04-24"
@@ -4710,5 +4902,137 @@
   "https://www.youtube.com/watch?v=kc0dED3Mmio": {
     "resultat": "descartada",
     "vist": "2026-05-27"
+  },
+  "raisc:6030-26-004": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:6204-26-026": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:6204-26-029": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:6760-26-107": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:7495-26-150": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:7495-26-159": {
+    "resultat": "oportunitat",
+    "vist": "2026-10-04"
+  },
+  "raisc:7495-26-162": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:7705-26-002": {
+    "resultat": "oportunitat",
+    "vist": "2026-10-04"
+  },
+  "raisc:8390-26-007": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:AG-26-076": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:AG-26-083": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:AG-26-090": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:AG-26-091": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:EN-26-015": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:EN-26-016": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:IU-26-072": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "raisc:PO-26-010": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions#menu-instruccions": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions#menu-mobile-instruccions": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/ajuts-al-foment-de-la-mobilitat-electrica-i-la-substitucio-dels-ciclomotors-de-combustio-pla-clima-2030-corresponent-al-periode-2026-2028": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/convocatoria-del-procediment-de-concurrencia-competitiva-la-seleccio-duna-entitat-financera-collaboradora-al-lliurament-i-distribucio-dels-fons-de-les-ajudes-del-programa-bonus-consum-barcelona": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/convocatoria-del-procediment-de-concurrencia-competitiva-la-seleccio-duna-entitat-financera-collaboradora-al-lliurament-i-la-distribucio-dels-fons-de-les-ajudes-del-programa-bonus-consum-barcelona": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-en-el-marc-del-programa-impulsem-el-que-fas": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-infants-i-joves-dentre-6-i-17-anys-la-practica-esportiva-fora-dhorari-escolar-io-la-inscripcio-les-activitats-de-la-campanya-tardes-educatives-2026-2027": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-inversions-dur-terme-estudis-dimpacte-acustic-installar-limitadors-enregistradors-de-nivells-sonors-rehabilitat-i-dotar-dequipament-tecnic-els-establiments-de-musica-en-viu-de-la-ciutat-de-barcelona-0": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-inversions-en-tecnologies-de-la-informacio-i-comunicacio-la-realitzacio-de-projectes-dexperimentacio-i-innovacio-en-lambit-de-la-cultura-la-ciutat-de-barcelona-de-lany-2026": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-la-rehabilitacio-i-la-dotacio-dequipament-tecnic-destinades-espais-privats-de-creacio-experimentacio-i-difusio-cultural-llibreries-i-sales-de-cinema-la-ciutat-de-barcelona-lany-2026": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-les-beques-barcelona-crea-fabra-i-coats-fabrica-de-creacio-edicio-2026": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://fundaciobofill.cat/crides": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://fundacionlacaixa.org/ca/beques-recerca-francesc-moragas": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://fundacionlacaixa.org/ca/convocatoria-audiovisual-caixaforum-plus": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://fundacionlacaixa.org/ca/convocatories-socials#wrapper": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
+  },
+  "web:https://fundacionlacaixa.org/ca/pobresa-infantil-primera-infancia-0-6": {
+    "resultat": "descartada",
+    "vist": "2026-10-04"
   }
 }

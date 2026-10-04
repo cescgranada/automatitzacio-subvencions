@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "avisada": "2026-10-04",
+    "encaix": 7,
+    "id": "raisc:7705-26-002",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1051990",
+    "organisme": "Consell de l'Audiovisual de Catalunya",
+    "termini": null,
+    "termini_data": "2027-01-05",
+    "titol": "Convocatòria 24ns Premis eduCAC",
+    "ultim_recordatori": null
+  },
+  {
+    "avisada": "2026-10-04",
+    "encaix": 6,
+    "id": "raisc:7495-26-159",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1052744",
+    "organisme": "Oficina de Suport a la Iniciativa Cultural (OSIC)",
+    "termini": null,
+    "termini_data": "2026-10-29",
+    "titol": "Convocatòria de subvencions per a l'impuls de l'ús del català en l'àmbit local",
+    "ultim_recordatori": null
+  }
+]
