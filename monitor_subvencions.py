@@ -10,7 +10,7 @@ import os
 import sys
 from datetime import date
 
-from patubot import config, estat, fonts, ia, sortida
+from patubot import config, estat, fonts, ia, panell, sortida
 from patubot.util import nova_sessio
 
 
@@ -35,7 +35,7 @@ def main() -> int:
     nous = [it for it in items if estat.es_nou(it, historial)]
     print(f"  Ítems nous per analitzar: {len(nous)}")
 
-    oportunitats, avaluats, candidats = [], set(), []
+    oportunitats, avaluats, candidats, valoracions = [], set(), [], []
     if nous and not crisi:
         from google import genai
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
@@ -51,7 +51,7 @@ def main() -> int:
             errors.append("IA: Gemini no ha pogut processar cap lot (mira el log d'Actions)")
             crisi = True
         print(f"  Candidats a anàlisi profunda: {len(candidats)}")
-        oportunitats, avaluats = ia.analitza_candidats(client, sessio, candidats, avui)
+        oportunitats, avaluats, valoracions = ia.analitza_candidats(client, sessio, candidats, avui)
         ids_op = {o["id"] for o in oportunitats}
         for it in candidats:
             if it["id"] in avaluats:
@@ -72,6 +72,17 @@ def main() -> int:
     nous_ids = {o["id"] for o in oportunitats}
     seguiment = estat.neteja_oportunitats(estat.afegeix_oportunitats(seguiment, oportunitats, avui), avui)
     recorda = [o for o in estat.recordatoris(seguiment, avui) if o["id"] not in nous_ids]
+
+    # --- panell web (totes les propostes, agrupades per organisme)
+    propostes = estat.carrega_propostes()
+    ids_op_avui = {o["id"] for o in oportunitats}
+    for v in valoracions:
+        estat.desa_proposta(propostes, v, v["id"] in ids_op_avui, avui)
+    propostes = estat.neteja_propostes(propostes, avui)
+    estat.guarda_propostes(propostes)
+    os.makedirs(os.path.dirname(config.PANELL_FILE), exist_ok=True)
+    with open(config.PANELL_FILE, "w", encoding="utf-8") as f:
+        f.write(panell.genera_panell(propostes, avui))
 
     # --- estat persistent
     estat.guarda_historial(historial, avui)

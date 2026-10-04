@@ -136,7 +136,8 @@ def construeix_correu(oportunitats, recordatoris, errors, resum: str, avui: date
     else:
         assumpte = f"Patu-Bot: resum setmanal, cap novetat — {dia}"
 
-    text, h = [resum, ""], [f"<p>{html.escape(resum)}</p>"]
+    text = [resum, f"Panell amb totes les propostes: {config.PANELL_URL}", ""]
+    h = [f"<p>{html.escape(resum)}</p>", f'<p>📋 <a href="{config.PANELL_URL}">Obrir el panell amb totes les propostes</a></p>']
     if recordatoris:
         text.append("== TERMINIS PROPERS ==")
         h.append("<h2>⏰ Terminis propers</h2><ul>")

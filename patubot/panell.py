@@ -1,0 +1,140 @@
+"""Genera docs/index.html: un panell estàtic (sense servidor) amb totes les propostes,
+agrupades per organisme. GitHub Pages el publica; el bot el regenera cada dia."""
+import json
+from datetime import date
+
+from . import config
+
+CAMPS = ("id", "titol", "organisme", "import_total", "termini_text", "termini_data", "elegibilitat",
+         "motiu_elegibilitat", "encaix", "resum", "requisits", "accions", "adaptacio", "link", "font",
+         "estat", "primera")
+
+
+def _json_segur(obj) -> str:
+    """JSON apte per incrustar dins <script> (evita tancar l'etiqueta des de les dades)."""
+    return json.dumps(obj, ensure_ascii=False).replace("</", "<\\/").replace(" ", " ").replace(" ", " ")
+
+
+def genera_panell(propostes: dict, avui: date) -> str:
+    dades = [{k: v.get(k, "") for k in CAMPS} for v in propostes.values()]
+    return (PLANTILLA
+            .replace("__DADES__", _json_segur(dades))
+            .replace("__MANUALS__", _json_segur([{"nom": n, "url": u} for n, u in config.FONTS_MANUALS]))
+            .replace("__DATA__", avui.isoformat()))
+
+
+PLANTILLA = """<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subvencions Nou Patufet</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--ink:#1f2328;--mut:#656d76;--line:#e3e1d9;--ok:#1a7f37;--mid:#9a6700;--bad:#b42318;--acc:#c2410c}
+@media (prefers-color-scheme:dark){:root{--bg:#16181c;--card:#1f2228;--ink:#e6e8eb;--mut:#9aa3ad;--line:#30343b;--ok:#4ac26b;--mid:#d4a72c;--bad:#f97066;--acc:#fb923c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.6rem;margin:0 0 2px}.sub{color:var(--mut);margin:0 0 18px;font-size:.92rem}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
+.bar input[type=search],.bar select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+.bar input[type=search]{flex:1 1 220px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--card);color:var(--ink);padding:8px 12px;font:inherit;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--acc);color:#fff}
+.chk{color:var(--mut);font-size:.9rem;display:flex;gap:6px;align-items:center}
+details.grup{margin:0 0 14px}details.grup>summary{cursor:pointer;font-weight:650;padding:6px 2px;list-style:none;display:flex;gap:8px;align-items:baseline}
+details.grup>summary::-webkit-details-marker{display:none}
+details.grup>summary::before{content:"▸";color:var(--mut)}details.grup[open]>summary::before{content:"▾"}
+.n{color:var(--mut);font-weight:400;font-size:.85rem}
+.card{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--mid);border-radius:10px;padding:12px 14px;margin:8px 0}
+.card.alt{border-left-color:var(--ok)}.card.baix{border-left-color:var(--line);opacity:.85}.card.caducada{opacity:.55}
+.card h3{margin:0 0 4px;font-size:1.02rem}.card h3 a{color:inherit}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--mut);font-size:.88rem;margin-bottom:6px}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:.78rem;font-weight:600;border:1px solid var(--line)}
+.pill.si{color:var(--ok)}.pill.dub{color:var(--mid)}.pill.no{color:var(--bad)}
+.card p{margin:4px 0;font-size:.93rem}.card b{font-weight:600}
+.dies{font-weight:600}.dies.urg{color:var(--bad)}
+.buit{color:var(--mut);padding:30px 0;text-align:center}
+.manual{margin-top:30px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;color:var(--mut);font-size:.9rem}
+a{color:var(--acc)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>Subvencions per a Nou Patufet</h1>
+<p class="sub">Convocatòries detectades pel Patu-Bot, agrupades per organisme. Actualitzat el <span id="gen"></span>.</p>
+<div class="bar">
+  <div class="seg" role="group" aria-label="Mostra">
+    <button id="m-op" aria-pressed="true">Oportunitats</button>
+    <button id="m-tot" aria-pressed="false">Totes les avaluades</button>
+  </div>
+  <input type="search" id="q" placeholder="Cerca per títol, organisme, tema…">
+  <select id="ord"><option value="encaix">Ordena: millor encaix</option><option value="termini">Ordena: termini més proper</option></select>
+  <label class="chk"><input type="checkbox" id="cad"> Mostra caducades</label>
+</div>
+<div id="llista"></div>
+<div class="manual" id="manual"></div>
+</div>
+<script>
+const DADES = __DADES__;
+const MANUALS = __MANUALS__;
+const GENERAT = "__DATA__";
+let mode = "op";
+const $ = id => document.getElementById(id);
+const avui = new Date(); avui.setHours(0,0,0,0);
+
+function h(tag, props, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})) { if (k==="class") e.className=v; else if (v!==null && v!==undefined) e.setAttribute(k,v); }
+  for (const c of kids.flat()) if (c!==null && c!==undefined && c!=="") e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const segur = u => /^https?:\\/\\//i.test(u||"") ? u : null;
+function dies(p){ if(!p.termini_data) return null; const d=new Date(p.termini_data+"T00:00:00"); return Math.round((d-avui)/86400000); }
+function textDies(n){ if(n===null) return null; if(n<0) return "caducada fa "+(-n)+" d"; if(n===0) return "caduca avui"; return "queden "+n+" d"; }
+
+function targeta(p){
+  const n = dies(p), cad = n!==null && n<0;
+  const cls = "card"+(p.encaix>=8?" alt":(p.encaix<6?" baix":""))+(cad?" caducada":"");
+  const el = p.elegibilitat==="Sí"?"si":(p.elegibilitat==="No"?"no":"dub");
+  const titol = segur(p.link) ? h("a",{href:p.link,target:"_blank",rel:"noopener"},p.titol) : p.titol;
+  return h("div",{class:cls},
+    h("h3",{},titol),
+    h("div",{class:"meta"},
+      h("span",{class:"pill "+el},"Elegibilitat: "+p.elegibilitat),
+      h("span",{},"Encaix "+p.encaix+"/10"),
+      h("span",{},"Import: "+(p.import_total||"Desconegut")),
+      h("span",{}, "Termini: "+(p.termini_data||p.termini_text||"pendent"), n!==null? h("span",{class:"dies"+(n>=0&&n<=10?" urg":"")}," ("+textDies(n)+")") : "")),
+    p.resum? h("p",{},p.resum):null,
+    p.requisits? h("p",{},h("b",{},"Requisits: "),p.requisits):null,
+    p.motiu_elegibilitat? h("p",{},h("b",{},"Elegibilitat: "),p.motiu_elegibilitat):null,
+    p.accions? h("p",{},h("b",{},"Primer pas: "),p.accions):null,
+    p.adaptacio? h("p",{},h("b",{},"Com adaptar-ho: "),p.adaptacio):null);
+}
+
+function pinta(){
+  const q = $("q").value.trim().toLowerCase(), cad = $("cad").checked, ord = $("ord").value;
+  let llista = DADES.filter(p => (mode==="tot" || p.estat==="oportunitat"))
+    .filter(p => cad || !(dies(p)!==null && dies(p)<0))
+    .filter(p => !q || (p.titol+" "+p.organisme+" "+p.resum+" "+p.requisits).toLowerCase().includes(q));
+  const cmp = ord==="termini" ? (a,b)=>(a.termini_data||"9999").localeCompare(b.termini_data||"9999") : (a,b)=>b.encaix-a.encaix;
+  llista.sort(cmp);
+  const grups = new Map();
+  for (const p of llista){ const k=(p.organisme||"Sense organisme").trim(); if(!grups.has(k)) grups.set(k,[]); grups.get(k).push(p); }
+  const ordenats = [...grups.entries()].sort((a,b)=> Math.max(...b[1].map(x=>x.encaix)) - Math.max(...a[1].map(x=>x.encaix)) || a[0].localeCompare(b[0],"ca"));
+  const cont = $("llista"); cont.replaceChildren();
+  if(!ordenats.length){ cont.append(h("div",{class:"buit"}, mode==="op" ? "Cap oportunitat activa ara mateix. El bot torna a mirar cada dia laborable." : "Encara no hi ha propostes avaluades.")); return; }
+  for (const [org, ps] of ordenats){
+    const d = h("details",{class:"grup",open:""}, h("summary",{}, org, h("span",{class:"n"}, ps.length+(ps.length===1?" proposta":" propostes"))));
+    ps.forEach(p => d.append(targeta(p)));
+    cont.append(d);
+  }
+}
+function setMode(m){ mode=m; $("m-op").setAttribute("aria-pressed", m==="op"); $("m-tot").setAttribute("aria-pressed", m==="tot"); pinta(); }
+$("m-op").onclick = ()=>setMode("op"); $("m-tot").onclick = ()=>setMode("tot");
+["q","ord","cad"].forEach(i => $(i).addEventListener("input", pinta));
+$("gen").textContent = new Date(GENERAT+"T00:00:00").toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
+$("manual").append("Fonts que el bot no pot llegir sol i cal mirar a mà: ", ...MANUALS.flatMap((m,i)=>[i?" · ":"", h("a",{href:m.url,target:"_blank",rel:"noopener"},m.nom)]));
+pinta();
+</script>
+</body></html>
+"""
