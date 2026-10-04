@@ -11,8 +11,6 @@ env:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: patubot
@@ -67,30 +65,3 @@ jobs:
             git pull --rebase --autostash
             git push
           fi
-
-  publica-panell:
-    needs: build
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.desplega.outputs.page_url }}
-    steps:
-      - name: Baixar l'estat més recent (inclou el commit del bot)
-        uses: actions/checkout@v4.2.2
-        with:
-          ref: main
-      - name: Comprovar que el panell existeix
-        id: hi_ha
-        run: '[ -f docs/index.html ] && echo "ok=true" >> "$GITHUB_OUTPUT" || echo "ok=false" >> "$GITHUB_OUTPUT"'
-      - uses: actions/configure-pages@v5
-        if: steps.hi_ha.outputs.ok == 'true'
-      - uses: actions/upload-pages-artifact@v3
-        if: steps.hi_ha.outputs.ok == 'true'
-        with:
-          path: docs
-      - name: Desplegar a GitHub Pages
-        id: desplega
-        if: steps.hi_ha.outputs.ok == 'true'
-        uses: actions/deploy-pages@v4

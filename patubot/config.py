@@ -7,7 +7,7 @@ OPORTUNITATS_FILE = "oportunitats.json"
 ESTAT_FILE = "ultima_execucio.json"
 PROPOSTES_FILE = "propostes.json"
 PANELL_FILE = "docs/index.html"
-PANELL_URL = "https://cescgranada.github.io/automatitzacio-subvencions/"
+PANELL_URL = "https://subvencions-nou-patufet.vercel.app/"
 
 # Fonts que el bot no pot llegir sol (bloquegen robots): el panell les mostra com a revisió manual
 FONTS_MANUALS = [

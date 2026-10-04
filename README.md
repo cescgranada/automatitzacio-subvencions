@@ -20,6 +20,11 @@ l'escola pot optar de debò**, amb termini, import i requisits ja extrets de la 
 Si alguna cosa falla (fonts caigudes, IA, Drive), **l'execució es marca com a fallida i GitHub t'envia un correu**.
 Ja no hi ha errors silenciosos. Els dilluns s'envia un correu de "tot OK" com a prova de vida.
 
+## Panell web
+
+El bot genera `docs/index.html` (totes les propostes, agrupades per organisme). Vercel el publica a
+**https://subvencions-nou-patufet.vercel.app** cada cop que el bot fa commit (config a `vercel.json`).
+
 ## Fitxers
 
 | Fitxer | Què és |
