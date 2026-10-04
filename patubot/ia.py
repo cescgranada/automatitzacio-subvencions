@@ -206,9 +206,9 @@ def es_oportunitat(v: dict, avui: date) -> bool:
     return v["elegibilitat"] != "No" and v["encaix"] >= config.MIN_ENCAIX
 
 
-def analitza_candidats(client, sessio, candidats: list[dict], avui: date) -> tuple[list[dict], set[str]]:
-    """Retorna (oportunitats ordenades, ids avaluats amb èxit)."""
-    oportunitats, fets = [], set()
+def analitza_candidats(client, sessio, candidats: list[dict], avui: date) -> tuple[list[dict], set[str], list[dict]]:
+    """Retorna (oportunitats ordenades, ids avaluats amb èxit, totes les valoracions)."""
+    oportunitats, fets, totes = [], set(), []
     for it in candidats:
         try:
             pagina = llegeix_pagina(sessio, it["link"])
@@ -217,9 +217,10 @@ def analitza_candidats(client, sessio, candidats: list[dict], avui: date) -> tup
             print(f"  [ERROR] anàlisi '{it['titol'][:60]}': {e}")
             continue
         fets.add(it["id"])
+        totes.append(v)
         print(f"    encaix {v['encaix']:>2} · {v['elegibilitat']:<6} · {v['titol'][:70]}")
         if es_oportunitat(v, avui):
             oportunitats.append(v)
         time.sleep(PAUSA_ENTRE_CRIDES)
     oportunitats.sort(key=lambda v: (-v["encaix"], v["termini_data"] or "9999"))
-    return oportunitats, fets
+    return oportunitats, fets, totes

@@ -55,13 +55,13 @@ jobs:
         run: |
           git config user.name "Patu-bot"
           git config user.email "bot@noupatufet.cat"
-          for f in historial_subvencions.json oportunitats.json ultima_execucio.json; do
+          for f in historial_subvencions.json oportunitats.json propostes.json ultima_execucio.json docs/index.html; do
             [ -f "$f" ] && git add "$f"
           done
           if git diff --staged --quiet; then
             echo "Sense canvis d'estat."
           else
-            git commit -m "Estat del Patu-Bot $(date -u +%F) [skip ci]"
+            git commit -m "Estat del Patu-Bot $(date -u +%F)"
             git pull --rebase --autostash
             git push
           fi

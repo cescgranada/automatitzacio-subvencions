@@ -84,3 +84,29 @@ def neteja_oportunitats(llista: list[dict], avui: date) -> list[dict]:
         fi = parse_data(o.get("termini_data"))
         return fi is None or (avui - fi).days <= 7
     return [o for o in llista if viva(o)]
+
+
+# ---------------------------------------------------------------- propostes (alimenten el panell web)
+def carrega_propostes(path=config.PROPOSTES_FILE) -> dict:
+    return _llegeix(path, {})
+
+
+def guarda_propostes(p: dict, path=config.PROPOSTES_FILE):
+    _escriu(path, p)
+
+
+def desa_proposta(p: dict, v: dict, es_oportunitat: bool, avui: date):
+    """Guarda (o actualitza) una convocatòria avaluada amb tots els camps que mostra el panell."""
+    antiga = p.get(v["id"], {})
+    p[v["id"]] = {**v, "estat": "oportunitat" if es_oportunitat else "descartada",
+                  "primera": antiga.get("primera", avui.isoformat()), "actualitzada": avui.isoformat()}
+
+
+def neteja_propostes(p: dict, avui: date) -> dict:
+    """Treu les que van caducar fa més de 60 dies o que van ser avaluades fa més d'un any."""
+    def viva(v):
+        fi = parse_data(v.get("termini_data"))
+        if fi:
+            return (avui - fi).days <= 60
+        return (avui - (parse_data(v.get("primera")) or avui)).days <= 365
+    return {k: v for k, v in p.items() if viva(v)}

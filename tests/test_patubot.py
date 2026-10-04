@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from patubot import estat, fonts, ia  # noqa: E402
+from patubot import estat, fonts, ia, panell  # noqa: E402
 from patubot.sortida import crea_fitxa_word, construeix_correu  # noqa: E402
 from patubot.util import clau_titol, parse_data  # noqa: E402
 
@@ -127,3 +127,20 @@ def test_correu_assumpte_segons_cas():
     assert "oportunitat" in construeix_correu([valoracio(link="l")], [], [], "r", AVUI)[0]
     assert "recordatori" in construeix_correu([], [{"termini_data": "2026-10-08", "titol": "A", "link": "l"}], [], "r", AVUI)[0]
     assert "ATENCIÓ" in construeix_correu([], [], ["BOE: error"], "r", AVUI)[0]
+
+
+# ---------------------------------------------------------------- propostes i panell
+def test_propostes_conserven_primera_data_i_netegen():
+    p = {}
+    estat.desa_proposta(p, {**valoracio(), "id": "a", "link": "l"}, True, date(2026, 10, 1))
+    estat.desa_proposta(p, {**valoracio(), "id": "a", "link": "l"}, False, AVUI)
+    assert p["a"]["primera"] == "2026-10-01" and p["a"]["estat"] == "descartada" and p["a"]["actualitzada"] == "2026-10-04"
+    p["b"] = {**valoracio(termini_data="2026-01-01"), "id": "b", "primera": "2026-01-01"}
+    assert list(estat.neteja_propostes(p, AVUI)) == ["a"]
+
+
+def test_panell_incrusta_dades_sense_trencar_script():
+    p = {"a": {**valoracio(), "id": "a", "link": "https://x.cat", "titol": "Mal </script><b>titol", "estat": "oportunitat"}}
+    out = panell.genera_panell(p, AVUI)
+    assert "</script><b>" not in out and r"<\/script>" in out
+    assert out.count("</script>") == 1 and "2026-10-04" in out and "__DADES__" not in out

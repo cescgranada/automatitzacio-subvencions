@@ -5,6 +5,15 @@ GDRIVE_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID") or "14Fgh_2rU43gsiXhaTGE-vAFGEq
 HISTORIAL_FILE = "historial_subvencions.json"
 OPORTUNITATS_FILE = "oportunitats.json"
 ESTAT_FILE = "ultima_execucio.json"
+PROPOSTES_FILE = "propostes.json"
+PANELL_FILE = "docs/index.html"
+PANELL_URL = "https://subvencions-nou-patufet.vercel.app/"
+
+# Fonts que el bot no pot llegir sol (bloquegen robots): el panell les mostra com a revisió manual
+FONTS_MANUALS = [
+    ("EduCaixa", "https://educaixa.org/ca/convocatories"),
+    ("Fundació Carulla", "https://fundaciocarulla.cat/"),
+]
 
 # Models de Gemini, per ordre de preferència (si un està retirat, prova el següent)
 GEMINI_MODELS = [m.strip() for m in os.getenv("GEMINI_MODELS") or "gemini-3.8-flash,gemini-2.5-flash".split(",") if m.strip()]
@@ -33,10 +42,9 @@ BENEFICIARIS_VALIDS = ("juridiques", "pyme", "gran empresa")  # descarta "només
 FONTS_WEB = [
     ("Fundació la Caixa", "https://fundacionlacaixa.org/ca/convocatories-socials", False),
     ("Fundació Bofill", "https://fundaciobofill.cat/crides", True),
-    ("EduCaixa", "https://educaixa.org/ca/convocatories", True),
-    ("Fundació Carulla", "https://fundaciocarulla.cat/", True),
     ("Fundació Banc Sabadell", "https://www.fundacionbancosabadell.com/convocatorias/", False),
     ("Ajuntament BCN (subvencions)", "https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions", False),
+    ("Coòpolis (ESS Barcelona)", "https://www.bcn.coop/category/noticies/", False),
 ]
 # tercer valor: la pàgina necessita JavaScript (només s'usa amb ScrapingBee)
 
