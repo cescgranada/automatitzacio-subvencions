@@ -1,8 +1,7 @@
 {
   "data": "2026-10-04",
-  "resum": "Fonts OK 7 · amb error 2 · ítems nous 81 · candidats 5 · oportunitats 2",
+  "resum": "Fonts OK 8 · amb error 1 · ítems nous 98 · candidats 0 · oportunitats 0",
   "errors": [
-    "EduCaixa: HTTP 403; ScrapingBee HTTP 401",
-    "Fundació Carulla: HTTP 202; ScrapingBee HTTP 401"
+    "IA: Gemini no ha pogut processar cap lot (mira el log d'Actions)"
   ]
 }
