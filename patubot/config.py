@@ -7,7 +7,7 @@ OPORTUNITATS_FILE = "oportunitats.json"
 ESTAT_FILE = "ultima_execucio.json"
 
 # Models de Gemini, per ordre de preferència (si un està retirat, prova el següent)
-GEMINI_MODELS = [m.strip() for m in os.getenv("GEMINI_MODELS") or "gemini-2.5-flash,gemini-2.0-flash".split(",") if m.strip()]
+GEMINI_MODELS = [m.strip() for m in os.getenv("GEMINI_MODELS") or "gemini-3.8-flash,gemini-2.5-flash".split(",") if m.strip()]
 
 # --- Finestres de temps ---------------------------------------------------
 DIES_FINESTRA = 75        # convocatòries publicades en els últims N dies (RAISC/CIDO)

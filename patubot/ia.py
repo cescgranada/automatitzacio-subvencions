@@ -41,24 +41,54 @@ class Valoracio(BaseModel):
 
 
 # ---------------------------------------------------------------- crida a Gemini
-def _crida(client, prompt: str, schema, models=None):
-    """Prova cada model i reintenta amb espera davant de límits de quota. Llança error si tot falla."""
-    from google.genai import types
-    cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=schema, temperature=0.2)
-    ultim = None
-    for model in (models or config.GEMINI_MODELS):
+_models_descoberts: list[str] | None = None
+
+
+def _descobreix_models(client) -> list[str]:
+    """Si els models configurats ja no existeixen, busca els 'flash' disponibles (el més nou primer)."""
+    global _models_descoberts
+    if _models_descoberts is None:
+        noms = []
+        try:
+            for m in client.models.list():
+                n = (m.name or "").replace("models/", "")
+                accions = getattr(m, "supported_actions", None) or []
+                if "flash" in n and "lite" not in n and "generateContent" in accions and not any(x in n for x in ("image", "tts", "live", "audio", "thinking")):
+                    noms.append(n)
+        except Exception as e:  # noqa: BLE001
+            print(f"  [ERROR] no s'han pogut llistar els models de Gemini: {e}")
+        _models_descoberts = sorted(noms, reverse=True)
+        print(f"  Models Gemini descoberts: {_models_descoberts[:5]}")
+    return _models_descoberts
+
+
+def _prova_models(client, models, prompt, cfg, errors):
+    for model in models:
         for intent in range(3):
             try:
                 resp = client.models.generate_content(model=model, contents=prompt, config=cfg)
                 return json.loads(resp.text)
             except Exception as e:  # noqa: BLE001
-                ultim = e
-                msg = str(e)
-                if "429" in msg or "503" in msg or "RESOURCE_EXHAUSTED" in msg or "UNAVAILABLE" in msg:
+                errors.append(f"{model}: {str(e)[:160]}")
+                if any(x in str(e) for x in ("429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE")):
                     time.sleep(20 * (intent + 1))
                     continue
-                break  # error no recuperable amb aquest model (p. ex. 404: model retirat) → següent model
-    raise RuntimeError(f"Gemini ha fallat amb tots els models: {ultim}")
+                break  # error no recuperable amb aquest model (p. ex. 404: retirat) → següent model
+    return None
+
+
+def _crida(client, prompt: str, schema, models=None):
+    """Prova els models configurats i, si tots fallen, els que Gemini diu que té disponibles."""
+    from google.genai import types
+    cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=schema, temperature=0.2)
+    errors: list[str] = []
+    res = _prova_models(client, models or config.GEMINI_MODELS, prompt, cfg, errors)
+    if res is None:
+        provats = set(models or config.GEMINI_MODELS)
+        res = _prova_models(client, [m for m in _descobreix_models(client) if m not in provats][:3], prompt, cfg, errors)
+    if res is None:
+        raise RuntimeError("Gemini ha fallat amb tots els models: " + " || ".join(errors[-4:]))
+    return res
 
 
 # ---------------------------------------------------------------- fase 1
