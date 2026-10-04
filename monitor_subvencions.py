@@ -47,6 +47,9 @@ def main() -> int:
         for it in nous:
             if it["id"] in processats and it["id"] not in ids_candidats and it["id"] not in sobrants:
                 estat.marca_vist(historial, it, avui, "descartada")
+        if not processats:
+            errors.append("IA: Gemini no ha pogut processar cap lot (mira el log d'Actions)")
+            crisi = True
         print(f"  Candidats a anàlisi profunda: {len(candidats)}")
         oportunitats, avaluats = ia.analitza_candidats(client, sessio, candidats, avui)
         ids_op = {o["id"] for o in oportunitats}
@@ -91,7 +94,7 @@ def main() -> int:
 
     print(f"  {resum}")
     if crisi:
-        print("  [ERROR] massa fonts caigudes — marco l'execució com a fallida perquè se't avisi.")
+        print("  [ERROR] execució amb errors greus — la marco com a fallida perquè se't avisi.")
         return 1
     return 0
 
