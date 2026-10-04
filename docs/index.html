@@ -29,6 +29,8 @@ details.grup>summary::before{content:"▸";color:var(--mut)}details.grup[open]>s
 .pill.si{color:var(--ok)}.pill.dub{color:var(--mid)}.pill.no{color:var(--bad)}
 .card p{margin:4px 0;font-size:.93rem}.card b{font-weight:600}
 .dies{font-weight:600}.dies.urg{color:var(--bad)}
+.go{border:0;background:var(--acc);color:#fff;padding:8px 14px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}.go:disabled{opacity:.5;cursor:default}
+#est{color:var(--mut);font-size:.9rem;margin:-8px 0 14px;min-height:1.2em}
 .buit{color:var(--mut);padding:30px 0;text-align:center}
 .manual{margin-top:30px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;color:var(--mut);font-size:.9rem}
 a{color:var(--acc)}
@@ -45,7 +47,9 @@ a{color:var(--acc)}
   <input type="search" id="q" placeholder="Cerca per títol, organisme, tema…">
   <select id="ord"><option value="encaix">Ordena: millor encaix</option><option value="termini">Ordena: termini més proper</option></select>
   <label class="chk"><input type="checkbox" id="cad"> Mostra caducades</label>
+  <button class="go" id="llegeix" hidden>↻ Llegeix ara</button>
 </div>
+<div id="est" role="status"></div>
 <div id="llista"></div>
 <div class="manual" id="manual"></div>
 </div>
@@ -110,5 +114,40 @@ $("m-op").onclick = ()=>setMode("op"); $("m-tot").onclick = ()=>setMode("tot");
 $("gen").textContent = new Date(GENERAT+"T00:00:00").toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
 $("manual").append("Fonts que el bot no pot llegir sol i cal mirar a mà: ", ...MANUALS.flatMap((m,i)=>[i?" · ":"", h("a",{href:m.url,target:"_blank",rel:"noopener"},m.nom)]));
 pinta();
+
+// ---- Botó "Llegeix ara": crida /api/lectura (funció de Vercel) que dispara el workflow
+const API = "/api/lectura";
+const guarda = (k,v) => { try { v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); } catch(e){} };
+const llegeix = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+let sondeig = null, haVistCurs = false;
+async function estatLectura(){ const r = await fetch(API); if(!r.ok) throw new Error(r.status); return r.json(); }
+function missatge(t){ $("est").textContent = t; }
+async function sondeja(){
+  try {
+    const e = await estatLectura();
+    if (e.en_curs) { haVistCurs = true; $("llegeix").disabled = true; missatge("Lectura en curs… triga uns minuts."); return; }
+    $("llegeix").disabled = false;
+    if (haVistCurs) {
+      clearInterval(sondeig); sondeig = null; haVistCurs = false;
+      missatge(e.conclusio==="success" ? "Lectura acabada. Actualitzant el panell…" : "La lectura ha acabat amb errors (mira el correu o GitHub Actions).");
+      if (e.conclusio==="success") setTimeout(()=>location.reload(), 90000);
+    }
+  } catch(err) { /* es torna a provar al proper sondeig */ }
+}
+function iniciaSondeig(){ if(!sondeig){ sondeja(); sondeig = setInterval(sondeja, 15000); } }
+$("llegeix").onclick = async () => {
+  let pin = llegeix("pin");
+  if (!pin) { pin = prompt("Codi d'accés per llançar la lectura:"); if (!pin) return; }
+  $("llegeix").disabled = true; missatge("Enviant la petició…");
+  try {
+    const r = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({pin})});
+    if (r.status===202) { guarda("pin", pin); haVistCurs = true; missatge("Lectura iniciada. Ho tindràs d'aquí a uns minuts."); iniciaSondeig(); return; }
+    if (r.status===401) { guarda("pin", null); missatge("Codi incorrecte."); }
+    else if (r.status===409) { missatge("Ja hi ha una lectura en curs."); iniciaSondeig(); return; }
+    else missatge("No s'ha pogut iniciar la lectura ("+r.status+").");
+  } catch(err) { missatge("Error de xarxa."); }
+  $("llegeix").disabled = false;
+};
+estatLectura().then(e => { $("llegeix").hidden = false; if (e.en_curs) { haVistCurs = true; $("llegeix").disabled = true; iniciaSondeig(); } }).catch(()=>{});
 </script>
 </body></html>
