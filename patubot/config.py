@@ -47,8 +47,21 @@ LINKS_IGNORATS = (
 )
 
 PERFIL_ESCOLA = """
-Escola Nou Patufet (I3-4t ESO). Cooperativa de treball situada a Gràcia, Barcelona.
+Escola Nou Patufet (I3-4t ESO), a la Vila de Gràcia (districte de Gràcia, Barcelona).
 Centre compromès amb el feminisme, la coeducació i l'Economia Social i Solidària (ESS).
+
+FORMA JURÍDICA I ELEGIBILITAT (clau per decidir "Sí / Dubtós / No"):
+- Som una SCCL (societat cooperativa catalana limitada, cooperativa de treball) que opera com a ESCOLA CONCERTADA.
+  Titularitat privada cooperativa, finançada amb concert del Departament d'Educació; no som un centre públic.
+- SÍ podem optar a: convocatòries obertes a cooperatives, entitats de l'ESS, entitats privades/sense ànim de lucre,
+  empreses (PYME) o persones jurídiques; i a les de "centres educatius" o "centres sostinguts amb fons públics /
+  concertats" quan no exigeixin titularitat pública.
+- NO podem optar a: convocatòries només per a centres educatius PÚBLICS, per a ajuntaments/administracions o per a
+  persones físiques; ni a les que exigeixin ser una entitat sense forma d'empresa (associacions, fundacions)
+  quan excloguin explícitament cooperatives. Si el text diu només "entitats sense ànim de lucre" i no queda clar si
+  una SCCL hi encaixa, marca "Dubtós" i explica-ho.
+- Territori: preferim Barcelona ciutat, Gràcia, Catalunya i Estat/Europa; les de barri/districte de Gràcia i
+  l'Ajuntament de Barcelona són especialment rellevants.
 
 QUÈ INTERESSA:
 1. Directes: ajuts per a escoles/centres educatius, cooperatives de treball o entitats sense ànim de lucre.
