@@ -1,61 +1,53 @@
-🤖 Patu-Bot: Gestor Intel·ligent de Subvencions per a Escoles
-Aquest sistema és un administratiu virtual d'alt rendiment per a l'Escola Nou Patufet. El robot revisa diàriament els diaris oficials, selecciona oportunitats mitjançant Intel·ligència Artificial i genera tota la documentació prèvia per a la direcció del centre.
+# 🤖 Patu-Bot v3 — Cercador de subvencions per a l'Escola Nou Patufet
 
-🌟 Funcions Principals
-Monitoratge 360°: Escaneja el BOE (Estat), DOGC (Generalitat), BOPB (Ajuntament de Barcelona/Diputació) i portals de fons europeus (Erasmus+, Next Generation).
+Cada dia laborable revisa fonts oficials, descarta el soroll i **només t'avisa de les convocatòries a les quals
+l'escola pot optar de debò**, amb termini, import i requisits ja extrets de la pàgina real.
 
-Filtrat per IA (Gemini 1.5 Flash): Selecciona només les subvencions que encaixen amb el perfil de l'escola (vulnerabilitat, motxilles econòmiques, infraestructures, etc.).
+## Com decideix què és interessant
 
-Generació de Fitxes: Omple automàticament una plantilla de Word (plantilla_subvencio.docx) amb les dades clau.
+1. **Recull** (només ítems nous, mai repetits):
+   - **RAISC** (Registre de subvencions de Catalunya): Generalitat, diputacions i Ajuntament de Barcelona, amb dades
+     estructurades (beneficiaris, finalitat, import, termini). Es filtra *abans* de la IA: altres municipis, altres
+     territoris, només persones físiques, agricultura, convocatòries ja caducades...
+   - **CIDO** (Diputació de Barcelona), **BOE** (API oficial) i les webs de fundacions (la Caixa, Bofill, EduCaixa,
+     Carulla, Banc Sabadell, Ajuntament BCN).
+2. **Triatge amb IA** (Gemini): puntua 1-10 cada ítem pel títol i les dades. Només passen els ≥ 5.
+3. **Anàlisi profunda**: es llegeix la pàgina de cada candidata i la IA en treu termini real, import, requisits i
+   **elegibilitat** (Sí / Dubtós / No). Només s'avisa si l'elegibilitat no és "No" i l'**encaix és ≥ 6/10**.
+4. **Sortides**: correu (HTML) ordenat per encaix, fitxa Word a Drive, i **recordatoris** quan falten ≤ 10 dies
+   per a un termini.
 
-Arxiu al Drive: Guarda el PDF original i la fitxa de Word a la teva carpeta de Google Drive sense intervenció humana.
+Si alguna cosa falla (fonts caigudes, IA, Drive), **l'execució es marca com a fallida i GitHub t'envia un correu**.
+Ja no hi ha errors silenciosos. Els dilluns s'envia un correu de "tot OK" com a prova de vida.
 
-Alertes per Correu: Envia un resum executiu cada matí a les 07:30h.
+## Fitxers
 
-📋 Requisits per a la instal·lació
-Si vols utilitzar aquesta plantilla al teu compte de GitHub, necessitaràs:
+| Fitxer | Què és |
+|---|---|
+| `monitor_subvencions.py` | Programa principal |
+| `patubot/config.py` | **Aquí s'ajusta tot**: perfil de l'escola, llindars (`MIN_ENCAIX`...), fonts web, models |
+| `patubot/fonts.py` · `ia.py` · `estat.py` · `sortida.py` | Recollida · IA · memòria · correu/Word/Drive |
+| `historial_subvencions.json` | Què s'ha vist ja (per no repetir) |
+| `oportunitats.json` | Oportunitats avisades, per als recordatoris |
+| `ultima_execucio.json` | Resum de l'última execució (també evita que GitHub desactivi el cron) |
+| `plantilla_subvencio.docx` | Plantilla de la fitxa. Marcadors: `{{titol}} {{organisme}} {{import}} {{termini}} {{resum}} {{accions}}` i opcionals `{{elegibilitat}} {{requisits}} {{adaptacio}} {{encaix}} {{link}}` |
 
-Google AI API Key: Gratis a Google AI Studio.
+## Configuració (Settings → Secrets and variables → Actions)
 
-Gmail i "Contrasenya d'aplicació": Per l'enviament de correus.
+**Secrets:** `GEMINI_API_KEY`, `EMAIL_USER`, `EMAIL_PASS` (contrasenya d'aplicació de Gmail), `EMAIL_RECEIVER`
+(pot ser una llista separada per comes), `GDRIVE_CREDENTIALS` (JSON del compte de servei), `SCRAPER_API_KEY`
+(opcional: només per a webs que bloquegen robots, com EduCaixa).
+**Variable (opcional):** `GDRIVE_FOLDER_ID`.
 
-Credencials de Google Cloud (JSON): Per la connexió amb Google Drive.
+## Ajustar la sensibilitat
 
-ID de Carpeta de Drive: On es desaran els documents.
+- Rebre més avisos: baixa `MIN_ENCAIX` (ara 6) o `MIN_PUNTUACIO_TRIATGE` (ara 5) a `patubot/config.py`.
+- Rebre'n menys però millors: puja'ls.
+- Canviar què interessa: edita `PERFIL_ESCOLA` a `patubot/config.py`.
 
-🚀 Guia ràpida de configuració
-1. Preparar el Repositori
-Clica el botó verd "Use this template" > "Create a new repository".
+## Desenvolupament
 
-2. Configurar els Secrets de GitHub
-Ves a Settings > Secrets and variables > Actions i afegeix aquests 5 secrets:
-
-GEMINI_API_KEY: La teva clau de la IA.
-
-EMAIL_USER: El teu correu de Gmail.
-
-EMAIL_PASS: El codi de 16 lletres de Google.
-
-EMAIL_RECEIVER: El correu on vols rebre els avisos.
-
-GDRIVE_CREDENTIALS: El contingut sencer del fitxer JSON de Google Cloud.
-
-3. Personalitzar el teu Perfil
-Edita el fitxer monitor_subvencions.py:
-
-Busca la variable GDRIVE_FOLDER_ID i posa l'ID de la teva carpeta de Drive.
-
-Busca la variable perfil i descriu la teva entitat (què busqueu i on sou).
-
-4. Personalitzar la Plantilla
-Descarrega el fitxer plantilla_subvencio.docx, adapta'l amb el teu logo i puja'l de nou. Assegura't de mantenir les etiquetes: {{titol}}, {{organisme}}, {{import}}, {{termini}}, {{resum}} i {{accions}}.
-
-5. Activar el Cron (El rellotge)
-Ves a la pestanya Actions i clica el botó blau "Enable Actions".
-
-⏰ Com funciona el calendari?
-El robot s'activa de dilluns a divendres a les 07:30h (CET).
-
-Si hi ha subvencions: Rebràs el resum i tindràs els fitxers al Drive.
-
-Si no hi ha res: Rebràs un correu confirmant que tot s'ha revisat però no hi ha novetats.
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q tests
+```
