@@ -47,32 +47,41 @@ LINKS_IGNORATS = (
 )
 
 PERFIL_ESCOLA = """
-Escola Nou Patufet (I3-4t ESO), a la Vila de Gràcia (districte de Gràcia, Barcelona).
-Centre compromès amb el feminisme, la coeducació i l'Economia Social i Solidària (ESS).
+Escola Nou Patufet (I3-4t ESO, ~escola cooperativa al cor de Gràcia), a la Vila de Gràcia (Barcelona).
 
 FORMA JURÍDICA I ELEGIBILITAT (clau per decidir "Sí / Dubtós / No"):
-- Som una SCCL (societat cooperativa catalana limitada, cooperativa de treball) que opera com a ESCOLA CONCERTADA.
-  Titularitat privada cooperativa, finançada amb concert del Departament d'Educació; no som un centre públic.
-- SÍ podem optar a: convocatòries obertes a cooperatives, entitats de l'ESS, entitats privades/sense ànim de lucre,
-  empreses (PYME) o persones jurídiques; i a les de "centres educatius" o "centres sostinguts amb fons públics /
-  concertats" quan no exigeixin titularitat pública.
-- NO podem optar a: convocatòries només per a centres educatius PÚBLICS, per a ajuntaments/administracions o per a
-  persones físiques; ni a les que exigeixin ser una entitat sense forma d'empresa (associacions, fundacions)
-  quan excloguin explícitament cooperatives. Si el text diu només "entitats sense ànim de lucre" i no queda clar si
-  una SCCL hi encaixa, marca "Dubtós" i explica-ho.
-- Territori: preferim Barcelona ciutat, Gràcia, Catalunya i Estat/Europa; les de barri/districte de Gràcia i
-  l'Ajuntament de Barcelona són especialment rellevants.
+- Som una SCCL: cooperativa de TREBALL ASSOCIAT des de l'1/09/2015 (les sòcies són docents i personal d'administració
+  i serveis; va néixer del tancament de l'Escola Patufet). Opera com a ESCOLA CONCERTADA: titularitat privada
+  cooperativa, finançada amb concert del Departament d'Educació. NO som un centre públic.
+- NO som una entitat sense ànim de lucre (ni associació ni fundació): som una cooperativa que desenvolupa activitat
+  econòmica. Ens correspon la categoria de PYME / persona jurídica que desenvolupa activitat econòmica, i la d'entitat
+  de l'Economia Social i Solidària (ESS).
+- SÍ podem optar a: convocatòries per a cooperatives o ESS; per a PYME o empreses; per a "centres educatius" o
+  "centres sostinguts amb fons públics / concertats" quan no exigeixin titularitat pública; i per a "persones
+  jurídiques" sense restricció a entitats sense ànim de lucre.
+- NO podem optar a: convocatòries només per a entitats SENSE ÀNIM DE LUCRE (associacions, fundacions), només per a
+  centres públics, ajuntaments/administracions o persones físiques, ni les que exclouen explícitament cooperatives.
+  Si el text és ambigu sobre si una cooperativa hi encaixa, marca "Dubtós" i explica-ho.
+- Territori: Barcelona ciutat i Gràcia (especialment rellevants), Catalunya, Estat i Europa.
+
+TRETS DEL PROJECTE (per valorar l'encaix temàtic):
+Feminisme i coeducació, educació en drets, Economia Social i Solidària i intercooperació (EscolesCoop, cooperativa
+d'alumnes AlumnesCoop, "Empreses amb propòsit"), arrelament al territori/barri (Vila del llibre, Amor-estima-passió pel
+territori), sostenibilitat (Escoles +sostenibles), innovació pedagògica (Educació 360, Escola Nova 21, aprenentatge
+basat en projectes, estratègia digital de centre), educació emocional i mindfulness, cultura i arts (Escola de rock,
+Fem cinema, Drama club), llengua i lectura (Pla d'impuls a la lectura), anglès, esport i natació, Diploma Dual i
+Programa Actuem a l'ESO, extraescolars i migdies educatius oberts al barri, casal d'estiu i Casal Jove, centre formador
+de professorat, projectes amb UNICEF Catalunya i Fundació Tr@ms.
 
 QUÈ INTERESSA:
-1. Directes: ajuts per a escoles/centres educatius, cooperatives de treball o entitats sense ànim de lucre.
-2. Adaptables: cultura, gènere, barri, sostenibilitat o innovació on l'escola pugui presentar un projecte propi
-   (taller d'arts, xarxa cooperativa de barri, pla d'igualtat, transició ecològica, activitats extraescolars...).
-3. Temàtiques clau: feminisme i coeducació, llengua catalana, intercooperació i ESS, arts escèniques i cultura,
-   sostenibilitat i ecologia, inclusió i diversitat funcional, innovació pedagògica, millora d'espais/infraestructura
-   del centre, famílies i vulnerabilitat socioeconòmica (projectes de centre, no beques individuals).
+1. Directes: ajuts per a escoles/centres educatius (inclosos concertats), cooperatives de treball, ESS.
+2. Adaptables: cultura, gènere, barri, sostenibilitat, innovació o digitalització on l'escola pugui presentar un
+   projecte propi (taller d'arts, xarxa cooperativa de barri, pla d'igualtat, transició ecològica, extraescolars...).
+3. També ajuts a empreses/PYME útils per a una cooperativa: digitalització, ocupació i formació de l'equip, eficiència
+   energètica, millora d'espais, intercooperació, plans d'igualtat.
 
 QUÈ NO INTERESSA:
 agricultura/ramaderia, recerca universitària, infraestructures viàries, ajuts només per a grans empreses mercantils,
-beques individuals per a alumnes (menjador/transport/material), esport d'elit, convocatòries d'altres municipis
-que no siguin Barcelona, ajuts només per a persones físiques.
+beques individuals per a alumnes (menjador/transport/material), esport d'elit, convocatòries d'altres municipis que
+no siguin Barcelona, ajuts només per a persones físiques o només per a entitats sense ànim de lucre.
 """
