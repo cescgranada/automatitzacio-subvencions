@@ -102,11 +102,10 @@ def desa_proposta(p: dict, v: dict, es_oportunitat: bool, avui: date):
                   "primera": antiga.get("primera", avui.isoformat()), "actualitzada": avui.isoformat()}
 
 
-def neteja_propostes(p: dict, avui: date) -> dict:
-    """Treu les que van caducar fa més de 60 dies o que van ser avaluades fa més d'un any."""
-    def viva(v):
-        fi = parse_data(v.get("termini_data"))
-        if fi:
-            return (avui - fi).days <= 60
-        return (avui - (parse_data(v.get("primera")) or avui)).days <= 365
-    return {k: v for k, v in p.items() if viva(v)}
+def carrega_eliminades(path=config.ELIMINADES_FILE) -> set:
+    return set(_llegeix(path, []))
+
+
+def sense_eliminades(p: dict, eliminades: set) -> dict:
+    """Les propostes s'acumulen indefinidament: només desapareixen quan algú les elimina des del panell."""
+    return {k: v for k, v in p.items() if k not in eliminades}

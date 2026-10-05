@@ -6,6 +6,7 @@ HISTORIAL_FILE = "historial_subvencions.json"
 OPORTUNITATS_FILE = "oportunitats.json"
 ESTAT_FILE = "ultima_execucio.json"
 PROPOSTES_FILE = "propostes.json"
+ELIMINADES_FILE = "eliminades.json"   # ids eliminats des del panell (els escriu la funció api/eliminades)
 PANELL_FILE = "docs/index.html"
 PANELL_URL = "https://subvencions-nou-patufet.vercel.app/"
 

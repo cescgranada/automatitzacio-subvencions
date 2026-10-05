@@ -83,11 +83,12 @@ def main() -> int:
     recorda = [o for o in estat.recordatoris(seguiment, avui) if o["id"] not in nous_ids]
 
     # --- panell web (totes les propostes, agrupades per organisme)
-    propostes = estat.carrega_propostes()
+    eliminades = estat.carrega_eliminades()
+    propostes = estat.sense_eliminades(estat.carrega_propostes(), eliminades)
     ids_op_avui = {o["id"] for o in oportunitats}
     for v in valoracions:
-        estat.desa_proposta(propostes, v, v["id"] in ids_op_avui, avui)
-    propostes = estat.neteja_propostes(propostes, avui)
+        if v["id"] not in eliminades:
+            estat.desa_proposta(propostes, v, v["id"] in ids_op_avui, avui)
     estat.guarda_propostes(propostes)
     os.makedirs(os.path.dirname(config.PANELL_FILE), exist_ok=True)
     with open(config.PANELL_FILE, "w", encoding="utf-8") as f:
