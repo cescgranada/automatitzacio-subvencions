@@ -72,7 +72,6 @@ a{color:var(--acc)}
   </div>
   <input type="search" id="q" placeholder="Cerca per títol, organisme, tema…">
   <select id="ord"><option value="encaix">Ordena: millor encaix</option><option value="termini">Ordena: termini més proper</option></select>
-  <label class="chk"><input type="checkbox" id="cad"> Amaga caducades</label>
   <button class="go" id="llegeix" hidden>↻ Llegeix ara</button>
 </div>
 <div id="est" role="status"></div>
@@ -119,10 +118,10 @@ function targeta(p){
 }
 
 function pinta(){
-  const q = $("q").value.trim().toLowerCase(), cad = $("cad").checked, ord = $("ord").value;
+  const q = $("q").value.trim().toLowerCase(), ord = $("ord").value;
   let llista = DADES.filter(p => !eliminades.has(p.id))
     .filter(p => (mode==="tot" || p.estat==="oportunitat"))
-    .filter(p => !cad || !(dies(p)!==null && dies(p)<0))
+    .filter(p => !(dies(p)!==null && dies(p)<0))   // les caducades per data no es mostren (el bot també les esborra)
     .filter(p => !q || (p.titol+" "+p.organisme+" "+p.resum+" "+p.requisits).toLowerCase().includes(q));
   const cmp = ord==="termini" ? (a,b)=>(a.termini_data||"9999").localeCompare(b.termini_data||"9999") : (a,b)=>b.encaix-a.encaix;
   llista.sort(cmp);
@@ -139,7 +138,7 @@ function pinta(){
 }
 function setMode(m){ mode=m; $("m-op").setAttribute("aria-pressed", m==="op"); $("m-tot").setAttribute("aria-pressed", m==="tot"); pinta(); }
 $("m-op").onclick = ()=>setMode("op"); $("m-tot").onclick = ()=>setMode("tot");
-["q","ord","cad"].forEach(i => $(i).addEventListener("input", pinta));
+["q","ord"].forEach(i => $(i).addEventListener("input", pinta));
 $("gen").textContent = new Date(GENERAT+"T00:00:00").toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
 $("manual").append("Fonts que el bot no pot llegir sol i cal mirar a mà: ", ...MANUALS.flatMap((m,i)=>[i?" · ":"", h("a",{href:m.url,target:"_blank",rel:"noopener"},m.nom)]));
 pinta();

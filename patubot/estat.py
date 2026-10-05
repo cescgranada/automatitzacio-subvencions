@@ -107,5 +107,13 @@ def carrega_eliminades(path=config.ELIMINADES_FILE) -> set:
 
 
 def sense_eliminades(p: dict, eliminades: set) -> dict:
-    """Les propostes s'acumulen indefinidament: només desapareixen quan algú les elimina des del panell."""
+    """Les propostes s'acumulen: només desapareixen si algú les elimina des del panell o si el termini ha passat."""
     return {k: v for k, v in p.items() if k not in eliminades}
+
+
+def treu_caducades(p: dict, avui: date) -> dict:
+    """Esborra les propostes amb data límit ja passada. Les que no tenen data es queden fins que s'eliminin a mà."""
+    def viva(v):
+        fi = parse_data(v.get("termini_data"))
+        return fi is None or fi >= avui
+    return {k: v for k, v in p.items() if viva(v)}

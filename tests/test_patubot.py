@@ -130,14 +130,21 @@ def test_correu_assumpte_segons_cas():
 
 
 # ---------------------------------------------------------------- propostes i panell
-def test_propostes_conserven_primera_data_i_nomes_se_les_treu_si_s_eliminen():
+def test_propostes_conserven_primera_data_i_s_eliminen_a_mans():
     p = {}
     estat.desa_proposta(p, {**valoracio(), "id": "a", "link": "l"}, True, date(2026, 10, 1))
     estat.desa_proposta(p, {**valoracio(), "id": "a", "link": "l"}, False, AVUI)
     assert p["a"]["primera"] == "2026-10-01" and p["a"]["estat"] == "descartada" and p["a"]["actualitzada"] == "2026-10-04"
     p["b"] = {**valoracio(termini_data="2020-01-01"), "id": "b", "primera": "2020-01-01"}
-    assert set(estat.sense_eliminades(p, set())) == {"a", "b"}      # una caducada fa anys NO desapareix sola
+    assert set(estat.sense_eliminades(p, set())) == {"a", "b"}
     assert set(estat.sense_eliminades(p, {"b"})) == {"a"}
+
+
+def test_caducades_per_data_s_esborren_i_sense_data_es_queden():
+    p = {"vella": {**valoracio(termini_data="2026-10-03"), "id": "vella"},
+         "avui": {**valoracio(termini_data="2026-10-04"), "id": "avui"},
+         "sense": {**valoracio(termini_data=""), "id": "sense"}}
+    assert set(estat.treu_caducades(p, AVUI)) == {"avui", "sense"}   # el mateix dia del termini encara val
 
 
 def test_panell_incrusta_dades_sense_trencar_script():

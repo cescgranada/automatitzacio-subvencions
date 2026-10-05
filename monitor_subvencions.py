@@ -89,6 +89,7 @@ def main() -> int:
     for v in valoracions:
         if v["id"] not in eliminades:
             estat.desa_proposta(propostes, v, v["id"] in ids_op_avui, avui)
+    propostes = estat.treu_caducades(propostes, avui)
     estat.guarda_propostes(propostes)
     os.makedirs(os.path.dirname(config.PANELL_FILE), exist_ok=True)
     with open(config.PANELL_FILE, "w", encoding="utf-8") as f:
