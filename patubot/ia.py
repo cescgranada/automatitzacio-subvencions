@@ -43,6 +43,10 @@ class Valoracio(BaseModel):
 
 
 # ---------------------------------------------------------------- crida a Gemini
+class CreditsEsgotats(RuntimeError):
+    """Error no recuperable: no té sentit provar més models ni més lots."""
+
+
 _models_descoberts: list[str] | None = None
 
 
@@ -73,6 +77,9 @@ def _prova_models(client, models, prompt, cfg, errors):
                 resp = client.models.generate_content(model=model, contents=prompt, config=cfg)
                 return json.loads(resp.text)
             except Exception as e:  # noqa: BLE001
+                if "credits are depleted" in str(e) or "prepayment" in str(e).lower():
+                    raise CreditsEsgotats("Gemini: crèdits de prepagament esgotats. Cal recarregar-los a "
+                                          "https://aistudio.google.com/billing (projecte Antigravity2).") from e
                 errors.append(f"{model}: {str(e)[:160]}")
                 print(f"  [IA] {model} intent {intent + 1}: {str(e)[:200]}")
                 if intent == 0 and any(x in str(e) for x in ("429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE")):
@@ -123,6 +130,8 @@ PUBLICACIONS (JSON):
 Retorna una puntuació per CADA id."""
         try:
             res = _crida(client, prompt, list[PuntuacioTriatge])
+        except CreditsEsgotats:
+            raise
         except Exception as e:  # noqa: BLE001
             print(f"  [ERROR] triatge lot {i // config.BATCH_TRIATGE + 1}: {e}")
             continue
@@ -213,6 +222,8 @@ def analitza_candidats(client, sessio, candidats: list[dict], avui: date) -> tup
         try:
             pagina = llegeix_pagina(sessio, it["link"])
             v = avalua(client, it, pagina, avui)
+        except CreditsEsgotats:
+            raise
         except Exception as e:  # noqa: BLE001
             print(f"  [ERROR] anàlisi '{it['titol'][:60]}': {e}")
             continue

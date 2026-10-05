@@ -39,7 +39,12 @@ def main() -> int:
     if nous and not crisi:
         from google import genai
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-        puntuacions, processats = ia.triatge(client, nous)
+        try:
+            puntuacions, processats = ia.triatge(client, nous)
+        except ia.CreditsEsgotats as e:
+            print(f"  [ERROR] {e}")
+            errors.append(str(e))
+            puntuacions, processats = {}, set()
         candidats = ia.tria_candidats(nous, puntuacions)
         ids_candidats = {c["id"] for c in candidats}
         # Només marquem com a "vist" el que la IA ha avaluat de debò: si falla, ho tornarem a provar demà.
@@ -51,7 +56,11 @@ def main() -> int:
             errors.append("IA: Gemini no ha pogut processar cap lot (mira el log d'Actions)")
             crisi = True
         print(f"  Candidats a anàlisi profunda: {len(candidats)}")
-        oportunitats, avaluats, valoracions = ia.analitza_candidats(client, sessio, candidats, avui)
+        try:
+            oportunitats, avaluats, valoracions = ia.analitza_candidats(client, sessio, candidats, avui)
+        except ia.CreditsEsgotats as e:
+            print(f"  [ERROR] {e}")
+            errors.append(str(e))
         ids_op = {o["id"] for o in oportunitats}
         for it in candidats:
             if it["id"] in avaluats:
