@@ -2,23 +2,10 @@
 //   GET  /api/lectura  -> { en_curs, ultima, conclusio, url }   (només lectura)
 //   POST /api/lectura  -> {pin}  valida el codi i dispara el workflow de GitHub Actions
 // Variables d'entorn (Vercel): GITHUB_DISPATCH_TOKEN (permís Actions: read/write només en aquest repo) i ACCES_PIN.
-const crypto = require("crypto");
+const { gh, pinCorrecte, configurat } = require("./_gh");
 
-const REPO = "cescgranada/automatitzacio-subvencions";
 const WORKFLOW = "cron_diari.yml";
 const ACTIUS = ["queued", "in_progress", "waiting", "requested", "pending"];
-
-const gh = (path, opts = {}) =>
-  fetch(`https://api.github.com/repos/${REPO}${path}`, {
-    ...opts,
-    headers: {
-      Authorization: `Bearer ${process.env.GITHUB_DISPATCH_TOKEN}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "patubot-panell",
-      ...(opts.headers || {}),
-    },
-  });
 
 async function estat() {
   const r = await gh(`/actions/workflows/${WORKFLOW}/runs?per_page=1`);
@@ -32,11 +19,9 @@ async function estat() {
   };
 }
 
-const hash = (s) => crypto.createHash("sha256").update(String(s)).digest();
-
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
-  if (!process.env.GITHUB_DISPATCH_TOKEN || !process.env.ACCES_PIN) {
+  if (!configurat()) {
     return res.status(503).json({ error: "Servei no configurat" });
   }
   try {
@@ -44,7 +29,7 @@ module.exports = async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: "Mètode no permès" });
 
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-    if (!crypto.timingSafeEqual(hash(body.pin ?? ""), hash(process.env.ACCES_PIN))) {
+    if (!pinCorrecte(body.pin)) {
       await new Promise((r) => setTimeout(r, 800)); // frena els intents de força bruta
       return res.status(401).json({ error: "Codi incorrecte" });
     }

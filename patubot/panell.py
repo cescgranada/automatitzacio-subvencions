@@ -56,6 +56,7 @@ details.grup>summary::before{content:"▸";color:var(--mut)}details.grup[open]>s
 .dies{font-weight:600}.dies.urg{color:var(--bad)}
 .go{border:0;background:var(--acc);color:#fff;padding:8px 14px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}.go:disabled{opacity:.5;cursor:default}
 #est{color:var(--mut);font-size:.9rem;margin:-8px 0 14px;min-height:1.2em}
+.acc{margin-top:8px;text-align:right}.del{border:1px solid var(--line);background:transparent;color:var(--mut);padding:3px 10px;border-radius:7px;font:inherit;font-size:.82rem;cursor:pointer}.del:hover{color:var(--bad);border-color:var(--bad)}.del:disabled{opacity:.5}
 .buit{color:var(--mut);padding:30px 0;text-align:center}
 .manual{margin-top:30px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;color:var(--mut);font-size:.9rem}
 a{color:var(--acc)}
@@ -71,7 +72,6 @@ a{color:var(--acc)}
   </div>
   <input type="search" id="q" placeholder="Cerca per títol, organisme, tema…">
   <select id="ord"><option value="encaix">Ordena: millor encaix</option><option value="termini">Ordena: termini més proper</option></select>
-  <label class="chk"><input type="checkbox" id="cad"> Mostra caducades</label>
   <button class="go" id="llegeix" hidden>↻ Llegeix ara</button>
 </div>
 <div id="est" role="status"></div>
@@ -83,12 +83,13 @@ const DADES = __DADES__;
 const MANUALS = __MANUALS__;
 const GENERAT = "__DATA__";
 let mode = "op";
+const eliminades = new Set();
 const $ = id => document.getElementById(id);
 const avui = new Date(); avui.setHours(0,0,0,0);
 
 function h(tag, props, ...kids){
   const e = document.createElement(tag);
-  for (const [k,v] of Object.entries(props||{})) { if (k==="class") e.className=v; else if (v!==null && v!==undefined) e.setAttribute(k,v); }
+  for (const [k,v] of Object.entries(props||{})) { if (k==="class") e.className=v; else if (typeof v==="function") e[k]=v; else if (v!==null && v!==undefined) e.setAttribute(k,v); }
   for (const c of kids.flat()) if (c!==null && c!==undefined && c!=="") e.append(c.nodeType ? c : document.createTextNode(c));
   return e;
 }
@@ -112,13 +113,15 @@ function targeta(p){
     p.requisits? h("p",{},h("b",{},"Requisits: "),p.requisits):null,
     p.motiu_elegibilitat? h("p",{},h("b",{},"Elegibilitat: "),p.motiu_elegibilitat):null,
     p.accions? h("p",{},h("b",{},"Primer pas: "),p.accions):null,
-    p.adaptacio? h("p",{},h("b",{},"Com adaptar-ho: "),p.adaptacio):null);
+    p.adaptacio? h("p",{},h("b",{},"Com adaptar-ho: "),p.adaptacio):null,
+    h("div",{class:"acc"}, h("button",{class:"del",title:"Elimina aquesta proposta de la llista per a tothom",onclick:ev=>elimina(p,ev.currentTarget)},"Elimina")));
 }
 
 function pinta(){
-  const q = $("q").value.trim().toLowerCase(), cad = $("cad").checked, ord = $("ord").value;
-  let llista = DADES.filter(p => (mode==="tot" || p.estat==="oportunitat"))
-    .filter(p => cad || !(dies(p)!==null && dies(p)<0))
+  const q = $("q").value.trim().toLowerCase(), ord = $("ord").value;
+  let llista = DADES.filter(p => !eliminades.has(p.id))
+    .filter(p => (mode==="tot" || p.estat==="oportunitat"))
+    .filter(p => !(dies(p)!==null && dies(p)<0))   // les caducades per data no es mostren (el bot també les esborra)
     .filter(p => !q || (p.titol+" "+p.organisme+" "+p.resum+" "+p.requisits).toLowerCase().includes(q));
   const cmp = ord==="termini" ? (a,b)=>(a.termini_data||"9999").localeCompare(b.termini_data||"9999") : (a,b)=>b.encaix-a.encaix;
   llista.sort(cmp);
@@ -135,10 +138,26 @@ function pinta(){
 }
 function setMode(m){ mode=m; $("m-op").setAttribute("aria-pressed", m==="op"); $("m-tot").setAttribute("aria-pressed", m==="tot"); pinta(); }
 $("m-op").onclick = ()=>setMode("op"); $("m-tot").onclick = ()=>setMode("tot");
-["q","ord","cad"].forEach(i => $(i).addEventListener("input", pinta));
+["q","ord"].forEach(i => $(i).addEventListener("input", pinta));
 $("gen").textContent = new Date(GENERAT+"T00:00:00").toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
 $("manual").append("Fonts que el bot no pot llegir sol i cal mirar a mà: ", ...MANUALS.flatMap((m,i)=>[i?" · ":"", h("a",{href:m.url,target:"_blank",rel:"noopener"},m.nom)]));
 pinta();
+
+// ---- Eliminar propostes (llista compartida, es desa al servidor)
+async function elimina(p, boto){
+  if (!confirm("Eliminar aquesta proposta de la llista per a tothom?\\n\\n"+p.titol)) return;
+  let pin = llegeix("pin");
+  if (!pin) { pin = prompt("Codi d'accés:"); if (!pin) return; }
+  boto.disabled = true;
+  try {
+    const r = await fetch("/api/eliminades", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({pin, id:p.id})});
+    if (r.ok) { guarda("pin", pin); eliminades.add(p.id); pinta(); return; }
+    if (r.status===401) { guarda("pin", null); alert("Codi incorrecte."); }
+    else { const j = await r.json().catch(()=>({})); alert("No s'ha pogut eliminar ("+r.status+")."+(j.detall?"\\n"+j.detall:"")); }
+  } catch(err) { alert("Error de xarxa."); }
+  boto.disabled = false;
+}
+fetch("/api/eliminades").then(r=>r.ok?r.json():{ids:[]}).then(j=>{ (j.ids||[]).forEach(i=>eliminades.add(i)); pinta(); }).catch(()=>{});
 
 // ---- Botó "Llegeix ara": crida /api/lectura (funció de Vercel) que dispara el workflow
 const API = "/api/lectura";
