@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "avisada": "2026-10-05",
+    "encaix": 7,
+    "id": "raisc:7705-26-002",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1051990",
+    "organisme": "CONSELL DE L'AUDIOVISUAL DE CATALUNYA",
+    "termini": null,
+    "termini_data": "2027-01-05",
+    "titol": "Convocatoria 24ns Premis eduCAC",
+    "ultim_recordatori": null
+  },
+  {
+    "avisada": "2026-10-05",
+    "encaix": 6,
+    "id": "raisc:8390-26-007",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1055563",
+    "organisme": "Consorci per a la Formació Contínua de Catalunya",
+    "termini": null,
+    "termini_data": "2026-10-16",
+    "titol": "Convocatòria de subvencions de programes de formació A MIDA (Línia B) - Ordre EMT/146/2025",
+    "ultim_recordatori": null
+  }
+]
