@@ -1,4 +1,24 @@
 {
+  "boe:BOE-A-2026-20973": {
+    "accions": "Descartar la convocatòria per incompatibilitat absoluta de forma jurídica i àmbit d'actuació.",
+    "actualitzada": "2026-10-08",
+    "adaptacio": "",
+    "elegibilitat": "No",
+    "encaix": 1,
+    "estat": "descartada",
+    "font": "BOE (Estat)",
+    "id": "boe:BOE-A-2026-20973",
+    "import_total": "Desconegut",
+    "link": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20973",
+    "motiu_elegibilitat": "La convocatòria està adreçada exclusivament a entitats sense ànim de lucre del Tercer Sector d'Acció Social d'àmbit estatal, fet que exclou expressament una cooperativa de treball associat (SCCL) d'àmbit català.",
+    "organisme": "Ministerio de Sanidad",
+    "primera": "2026-10-08",
+    "requisits": "1. Ser entitat sense ànim de lucre del Tercer Sector d'Acció Social. 2. Àmbit d'actuació estatal. 3. Projectes orientats a l'acompanyament i transformació de serveis d'atenció primerenca.",
+    "resum": "Convocatòria finançada amb fons FSE+ per a projectes d'acompanyament a centres i equips d'atenció primerenca (atenció precoç) per adaptar-los als nous estàndards del Consens Estatal de millora de l'atenció a la infància vulnerable.",
+    "termini_data": "",
+    "termini_text": "No consta en el fragment publicat",
+    "titol": "Orden SND/1063/2026, de 28 de septiembre: Acompañamiento a centros, servicios y equipos de atención temprana"
+  },
   "raisc:7705-26-002": {
     "accions": "Consultar les categories i bases detallades al web d'eduCAC i valorar la presentació de projectes audiovisuals del centre (com els de 'Fem cinema' o de l'estratègia digital).",
     "actualitzada": "2026-10-05",
