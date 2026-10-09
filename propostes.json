@@ -78,5 +78,25 @@
     "termini_data": "2026-10-16",
     "termini_text": "16/10/2026",
     "titol": "Convocatòria de subvencions de programes de formació A MIDA (Línia B) - Ordre EMT/146/2025"
+  },
+  "raisc:IU-26-069": {
+    "accions": "Consultar el detall de les bases (Ordre EMT/127/2026) per valorar si s'encaixa una iniciativa d'enfortiment cooperatiu o intercooperació (p. ex. amb EscolesCoop o entitats de Gràcia) abans del 22 d'octubre.",
+    "actualitzada": "2026-10-09",
+    "adaptacio": "",
+    "elegibilitat": "Sí",
+    "encaix": 8,
+    "estat": "oportunitat",
+    "font": "RAISC (Generalitat/locals)",
+    "id": "raisc:IU-26-069",
+    "import_total": "4.000.000 €",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1056233",
+    "motiu_elegibilitat": "L'escola és una SCCL (cooperativa de treball associat) i PIME que desenvolupa activitat econòmica dins de l'Economia Social i Solidària, subjecte plenament coincident amb els beneficiaris de la línia CreixESS.",
+    "organisme": "Departament d'Empresa i Treball",
+    "primera": "2026-10-09",
+    "requisits": "1. Ser cooperativa o entitat de l'Economia Social i Solidària que desenvolupi activitat econòmica (PIME). 2. Presentar un projecte singular de transformació o consolidació empresarial i ocupacional. 3. Justificació de memòria tècnica, viabilitat econòmica i acompliment de requisits de cofinançament segons l'Ordre EMT/127/2026.",
+    "resum": "Convocatòria d'ajuts per a projectes singulars de l'economia social i solidària (línia L2 CreixESS), orientats al creixement, consolidació, escala, intercooperació i generació d'ocupació de cooperatives i iniciatives de l'ESS a Catalunya.",
+    "termini_data": "2026-10-22",
+    "termini_text": "Fins al 22 d'octubre de 2026",
+    "titol": "Subvencions a projectes singulars de l'economia social i solidària i el cooperativisme 2026 (L2 CreixESS)"
   }
 }
