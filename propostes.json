@@ -39,6 +39,26 @@
     "termini_text": "Fins al 5 de gener de 2027",
     "titol": "Convocatoria 24ns Premis eduCAC"
   },
+  "raisc:IF-26-008": {
+    "accions": "Comprovar el còmput oficial de la plantilla de l'escola i demanar pressupost a consultories d'igualtat o de l'Economia Social per presentar la memòria i sol·licitud abans del 9 de novembre de 2026.",
+    "actualitzada": "2026-10-21",
+    "adaptacio": "Permet finançar una millora organitzativa interna de la cooperativa (diagnòstic de gènere, conciliació i retribució de l'equip docent i PAS) alineada amb els valors de feminisme i coeducació del centre.",
+    "elegibilitat": "Sí",
+    "encaix": 8,
+    "estat": "oportunitat",
+    "font": "RAISC (Generalitat/locals)",
+    "id": "raisc:IF-26-008",
+    "import_total": "250.000 €",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1057111",
+    "motiu_elegibilitat": "Com a cooperativa de treball associat (SCCL), l'escola té la consideració d'empresa/pime amb activitat econòmica. És elegible sempre que la seva plantilla total (docents i PAS) sigui inferior a 50 persones treballadores.",
+    "organisme": "Departament d'Igualtat i Feminisme",
+    "primera": "2026-10-21",
+    "requisits": "Tenir menys de 50 persones treballadores en plantilla a Catalunya; constituir la comissió negociadora d'igualtat; no estar obligat prèviament per conveni col·lectiu d'aplicació a disposar de pla d'igualtat.",
+    "resum": "Línia d'ajuts per finançar la contractació d'assistència tècnica per al diagnòstic i l'elaboració de plans d'igualtat en petites empreses i entitats que no estan legalment obligades a tenir-ne per volum de plantilla.",
+    "termini_data": "2026-11-09",
+    "termini_text": "09/11/2026",
+    "titol": "Subvencions elaboracio de plans d'igualtat a empreses i entitats de menys de cinquanta persones treballadores de Catalunya, cofinanades pel Fons Social Europeu Plus de Catalunya 2021-2027 (PCAT+)"
+  },
   "raisc:IU-26-069": {
     "accions": "Consultar el detall de les bases (Ordre EMT/127/2026) per valorar si s'encaixa una iniciativa d'enfortiment cooperatiu o intercooperació (p. ex. amb EscolesCoop o entitats de Gràcia) abans del 22 d'octubre.",
     "actualitzada": "2026-10-09",

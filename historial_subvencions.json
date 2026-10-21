@@ -123,6 +123,10 @@
     "resultat": "descartada",
     "vist": "2026-10-19"
   },
+  "boe:BOE-A-2026-21935": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
   "boe:BOE-B-2026-31848": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -654,6 +658,30 @@
   "boe:BOE-B-2026-34210": {
     "resultat": "descartada",
     "vist": "2026-10-20"
+  },
+  "boe:BOE-B-2026-34260": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
+  "boe:BOE-B-2026-34263": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
+  "boe:BOE-B-2026-34267": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
+  "boe:BOE-B-2026-34299": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
+  "boe:BOE-B-2026-34300": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
+  "boe:BOE-B-2026-34301": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
   },
   "cido:https://cido.diba.cat/subvencions/16994225": {
     "resultat": "descartada",
@@ -5451,6 +5479,10 @@
     "resultat": "descartada",
     "vist": "2026-10-09"
   },
+  "raisc:6204-26-014": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
+  },
   "raisc:6204-26-026": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -5527,6 +5559,10 @@
     "resultat": "descartada",
     "vist": "2026-10-05"
   },
+  "raisc:IF-26-008": {
+    "resultat": "oportunitat",
+    "vist": "2026-10-21"
+  },
   "raisc:IU-26-069": {
     "resultat": "oportunitat",
     "vist": "2026-10-09"
@@ -5534,6 +5570,10 @@
   "raisc:IU-26-072": {
     "resultat": "descartada",
     "vist": "2026-10-05"
+  },
+  "raisc:PO-26-004": {
+    "resultat": "descartada",
+    "vist": "2026-10-21"
   },
   "raisc:PO-26-010": {
     "resultat": "descartada",
