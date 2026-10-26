@@ -19,6 +19,26 @@
     "termini_text": "No consta en el fragment publicat",
     "titol": "Orden SND/1063/2026, de 28 de septiembre: Acompañamiento a centros, servicios y equipos de atención temprana"
   },
+  "cido:https://cido.diba.cat/subvencions/22003387": {
+    "accions": "Consultar les bases reguladores a la seu electrònica de l'AMB i coordinar amb l'equip de secundària (4t d'ESO) o el Casal Jove una proposta d'acció climàtica per presentar abans del 5 de novembre.",
+    "actualitzada": "2026-10-26",
+    "adaptacio": "",
+    "elegibilitat": "Sí",
+    "encaix": 8,
+    "estat": "oportunitat",
+    "font": "CIDO (Diputació de Barcelona)",
+    "id": "cido:https://cido.diba.cat/subvencions/22003387",
+    "import_total": "Desconegut",
+    "link": "https://cido.diba.cat/subvencions/22003387",
+    "motiu_elegibilitat": "La convocatòria admet expressament tant 'Centres d'ensenyament i universitats' com 'Entitats d'economia social i solidària', categories que recullen directament la forma jurídica i activitat de l'escola cooperativa a Barcelona.",
+    "organisme": "Àrea Metropolitana de Barcelona (AMB)",
+    "primera": "2026-10-26",
+    "requisits": "Estar constituït com a centre d'ensenyament o entitat d'economia social i solidària; projectes necessàriament liderats per joves d'entre 15 i 24 anys; tramitació telemàtica mitjançant la seu electrònica de l'AMB.",
+    "resum": "Subvencions de l'AMB per desenvolupar projectes d'acció climàtica i sostenibilitat que estiguin liderats per joves d'entre 15 i 24 anys.",
+    "termini_data": "2026-11-05",
+    "termini_text": "05/11/2026",
+    "titol": "Subvencions per a projectes d'acció climàtica juvenil en el marc del Fons Joventut d'Acció Climàtica"
+  },
   "raisc:7705-26-002": {
     "accions": "Consultar les categories i bases detallades al web d'eduCAC i valorar la presentació de projectes audiovisuals del centre (com els de 'Fem cinema' o de l'estratègia digital).",
     "actualitzada": "2026-10-05",
@@ -58,5 +78,25 @@
     "termini_data": "2026-11-09",
     "termini_text": "09/11/2026",
     "titol": "Subvencions elaboracio de plans d'igualtat a empreses i entitats de menys de cinquanta persones treballadores de Catalunya, cofinanades pel Fons Social Europeu Plus de Catalunya 2021-2027 (PCAT+)"
+  },
+  "raisc:IF-26-009": {
+    "accions": "Revisar immediatament al DOGC les bases reguladores i categories del premi per comprovar si algun projecte de coeducació o drets de l'escola pot formalitzar la candidatura abans del termini imminent.",
+    "actualitzada": "2026-10-26",
+    "adaptacio": "Presentar iniciatives pedagògiques o projectes comunitaris de l'escola orientats a la coeducació, el feminisme o l'educació en drets humans.",
+    "elegibilitat": "Sí",
+    "encaix": 6,
+    "estat": "oportunitat",
+    "font": "RAISC (Generalitat/locals)",
+    "id": "raisc:IF-26-009",
+    "import_total": "125.000 €",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1056928",
+    "motiu_elegibilitat": "La convocatòria està oberta a pimes i persones jurídiques que desenvolupen activitat econòmica, categoria en la qual encaixa plenament l'escola com a cooperativa de treball associat (SCCL).",
+    "organisme": "Departament d'Igualtat i Feminisme",
+    "primera": "2026-10-26",
+    "requisits": "1) Ser pime o persona jurídica amb activitat econòmica; 2) Presentar projectes, obres o iniciatives de sensibilització i reflexió en drets humans; 3) Presentar la candidatura telemàticament abans del 30 d'octubre de 2026.",
+    "resum": "Tercera edició dels Premis Laya destinats a reconèixer i guardonar iniciatives que fomentin la divulgació, la reflexió i el coneixement dels drets humans i la igualtat.",
+    "termini_data": "2026-10-30",
+    "termini_text": "30/10/2026",
+    "titol": "RESOLUCIO IFE/XXXXX , de XXXXX, per la qual sobre la convocatoria de la tercera edicio dels Premis Laya del Departament dIgualtat i Feminisme, per fomentar la divulgacio, el coneixement i la reflexio dels drets humans, per a lany 2026"
   }
 }

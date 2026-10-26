@@ -11,28 +11,6 @@
     "ultim_recordatori": null
   },
   {
-    "avisada": "2026-10-05",
-    "encaix": 6,
-    "id": "raisc:8390-26-007",
-    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1055563",
-    "organisme": "Consorci per a la Formació Contínua de Catalunya",
-    "termini": null,
-    "termini_data": "2026-10-16",
-    "titol": "Convocatòria de subvencions de programes de formació A MIDA (Línia B) - Ordre EMT/146/2025",
-    "ultim_recordatori": "2026-10-16"
-  },
-  {
-    "avisada": "2026-10-07",
-    "encaix": 7,
-    "id": "raisc:8390-26-006",
-    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1055563",
-    "organisme": "Consorci per a la Formació Contínua de Catalunya",
-    "termini": null,
-    "termini_data": "2026-10-16",
-    "titol": "Subvencions de programes de formació A MIDA per a empreses (Línia A - Ordre EMT/146/2025)",
-    "ultim_recordatori": "2026-10-16"
-  },
-  {
     "avisada": "2026-10-09",
     "encaix": 8,
     "id": "raisc:IU-26-069",
@@ -53,5 +31,27 @@
     "termini_data": "2026-11-09",
     "titol": "Subvencions elaboracio de plans d'igualtat a empreses i entitats de menys de cinquanta persones treballadores de Catalunya, cofinanades pel Fons Social Europeu Plus de Catalunya 2021-2027 (PCAT+)",
     "ultim_recordatori": null
+  },
+  {
+    "avisada": "2026-10-26",
+    "encaix": 8,
+    "id": "cido:https://cido.diba.cat/subvencions/22003387",
+    "link": "https://cido.diba.cat/subvencions/22003387",
+    "organisme": "Àrea Metropolitana de Barcelona (AMB)",
+    "termini": null,
+    "termini_data": "2026-11-05",
+    "titol": "Subvencions per a projectes d'acció climàtica juvenil en el marc del Fons Joventut d'Acció Climàtica",
+    "ultim_recordatori": "2026-10-26"
+  },
+  {
+    "avisada": "2026-10-26",
+    "encaix": 6,
+    "id": "raisc:IF-26-009",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1056928",
+    "organisme": "Departament d'Igualtat i Feminisme",
+    "termini": null,
+    "termini_data": "2026-10-30",
+    "titol": "RESOLUCIO IFE/XXXXX , de XXXXX, per la qual sobre la convocatoria de la tercera edicio dels Premis Laya del Departament dIgualtat i Feminisme, per fomentar la divulgacio, el coneixement i la reflexio dels drets humans, per a lany 2026",
+    "ultim_recordatori": "2026-10-26"
   }
 ]

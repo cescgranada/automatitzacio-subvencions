@@ -155,6 +155,22 @@
     "resultat": "descartada",
     "vist": "2026-10-23"
   },
+  "boe:BOE-A-2026-22391": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-A-2026-22392": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-A-2026-22410": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-A-2026-22423": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
   "boe:BOE-B-2026-31848": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -879,6 +895,86 @@
     "resultat": "descartada",
     "vist": "2026-10-23"
   },
+  "boe:BOE-B-2026-34892": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34907": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34912": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34953": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34954": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34955": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34956": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34957": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34958": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34959": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34960": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34961": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34962": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34963": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34964": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34965": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34966": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34967": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34968": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
+  "boe:BOE-B-2026-34969": {
+    "resultat": "descartada",
+    "vist": "2026-10-26"
+  },
   "cido:https://cido.diba.cat/subvencions/16994225": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -914,6 +1010,10 @@
   "cido:https://cido.diba.cat/subvencions/21874140": {
     "resultat": "descartada",
     "vist": "2026-10-05"
+  },
+  "cido:https://cido.diba.cat/subvencions/22003387": {
+    "resultat": "oportunitat",
+    "vist": "2026-10-26"
   },
   "cido:https://cido.diba.cat/subvencions/22011499": {
     "resultat": "descartada",
@@ -5770,6 +5870,10 @@
   "raisc:IF-26-008": {
     "resultat": "oportunitat",
     "vist": "2026-10-21"
+  },
+  "raisc:IF-26-009": {
+    "resultat": "oportunitat",
+    "vist": "2026-10-26"
   },
   "raisc:IU-26-069": {
     "resultat": "oportunitat",
