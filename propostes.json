@@ -19,6 +19,26 @@
     "termini_text": "No consta en el fragment publicat",
     "titol": "Orden SND/1063/2026, de 28 de septiembre: Acompañamiento a centros, servicios y equipos de atención temprana"
   },
+  "boe:BOE-A-2026-24492": {
+    "accions": "Consultar el text íntegre de la resolució al BOE per verificar el termini de sol·licitud, el pressupost mínim exigit per operació i el percentatge de cofinançament necessari.",
+    "actualitzada": "2026-11-23",
+    "adaptacio": "Plantejar una intervenció o pilot experimental des de l'àmbit socioeducatiu centrat en la inclusió, la garantia infantil i l'atenció a la infància vulnerable, preferiblement en aliança o consorci amb altres entitats del territori o de l'economia social.",
+    "elegibilitat": "Sí",
+    "encaix": 4,
+    "estat": "descartada",
+    "font": "BOE (Estat)",
+    "id": "boe:BOE-A-2026-24492",
+    "import_total": "Desconegut",
+    "link": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-24492",
+    "motiu_elegibilitat": "La convocatòria està oberta expressament a 'entitats de l'economia social' (a més del tercer sector i ens locals); l'escola, com a cooperativa de treball associat (SCCL), té aquesta consideració jurídica.",
+    "organisme": "Ministerio de Derechos Sociales, Consumo y Agenda 2030 - Instituto de Mayores y Servicios Sociales (IMSERSO)",
+    "primera": "2026-11-23",
+    "requisits": "1. Ser entitat del tercer sector d'acció social, entitat de l'economia social o ens local. 2. Presentar un projecte d'innovació o experimentació social alineat amb l'objectiu ESO4.11 (accés a serveis, infància i col·lectius vulnerables). 3. Subjecció a les regles de gestió i justificació de despeses del FSE+ (finançament per reemborsament de costos elegibles).",
+    "resum": "Convocatòria estatal per seleccionar projectes d'innovació o experimentació social cofinançats amb Fons Social Europeu Plus (FSE+) orientats a la inclusió social, la garantia infantil i la millora de l'accés a serveis socials per a col·lectius desfavorits.",
+    "termini_data": "",
+    "termini_text": "Desconegut",
+    "titol": "Resolución de 30 de octubre de 2026, del Instituto de Mayores y Servicios Sociales, por la que se aprueba la convocatoria para la elección de operaciones en el marco del Programa de Inclusión Social, Garantía Infantil y Lucha Contra la Pobreza (FSE+)"
+  },
   "boe:BOE-B-2026-37945": {
     "accions": "Consultar la convocatòria completa a la BDNS (ID 942473) per revisar quins cursos concrets d'alumnat hi poden participar i valorar amb l'equip docent si es presenta candidatura.",
     "actualitzada": "2026-11-18",
@@ -58,6 +78,26 @@
     "termini_data": "2026-12-04",
     "termini_text": "Fins al 4 de desembre de 2026 a les 12.00 h (hora peninsular)",
     "titol": "Extracto de la Resolución de 16 de noviembre de 2026 de la Secretaría de Estado de Educación, por la que se convocan ayudas para participar en el programa nacional 'Recuperación y utilización educativa de pueblos abandonados' durante el año 2027"
+  },
+  "raisc:7495-26-198": {
+    "accions": "Consultar el text complet de les bases reguladores al DOGC per avaluar si l'escola compta amb prou capacitat tècnica o socis tecnològics per dissenyar una proposta cultural immersiva abans del 15 de desembre de 2026.",
+    "actualitzada": "2026-11-23",
+    "adaptacio": "No és una línia educativa: caldria articular-ho com una producció o experiència cultural oberta al barri (per exemple, creació artística o patrimonial vinculada als projectes de teatre, cinema o memòria històrica de Gràcia) que empri realitat virtual o continguts immersius.",
+    "elegibilitat": "Sí",
+    "encaix": 4,
+    "estat": "descartada",
+    "font": "RAISC (Generalitat/locals)",
+    "id": "raisc:7495-26-198",
+    "import_total": "2.000.000 €",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1059651",
+    "motiu_elegibilitat": "L'escola és una cooperativa de treball associat (SCCL) amb activitat econòmica i té la condició de pime, una categoria explícitament admesa entre els beneficiaris de la convocatòria.",
+    "organisme": "Oficina de Suport a la Iniciativa Cultural (OSIC)",
+    "primera": "2026-11-23",
+    "requisits": "Ser pime amb activitat econòmica o persona jurídica; presentar un projecte de caràcter estrictament cultural que integri tecnologies immersives; aportar memòria del projecte i pressupost desglossat segons les bases de l'OSIC.",
+    "resum": "Subvencions destinades al desenvolupament i producció de projectes culturals que utilitzin tecnologies immersives (com realitat virtual, augmentada o entorns mixtos) impulsades per entitats o empreses.",
+    "termini_data": "2026-12-15",
+    "termini_text": "Fins al 15 de desembre de 2026",
+    "titol": "Convocatoria de subvencions per a projectes culturals que facin servir tecnologia immersiva"
   },
   "raisc:7705-26-002": {
     "accions": "Consultar les categories i bases detallades al web d'eduCAC i valorar la presentació de projectes audiovisuals del centre (com els de 'Fem cinema' o de l'estratègia digital).",

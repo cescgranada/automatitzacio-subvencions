@@ -363,6 +363,18 @@
     "resultat": "descartada",
     "vist": "2026-11-20"
   },
+  "boe:BOE-A-2026-24484": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-A-2026-24492": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-A-2026-24503": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
   "boe:BOE-B-2026-31848": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -2282,6 +2294,50 @@
   "boe:BOE-B-2026-38246": {
     "resultat": "descartada",
     "vist": "2026-11-20"
+  },
+  "boe:BOE-B-2026-38456": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38678": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38679": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38680": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38681": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38682": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38683": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38684": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38685": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38686": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "boe:BOE-B-2026-38687": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
   },
   "cido:https://cido.diba.cat/subvencions/16994225": {
     "resultat": "descartada",
@@ -7139,6 +7195,10 @@
     "resultat": "descartada",
     "vist": "2026-11-02"
   },
+  "raisc:6880-26-017": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
   "raisc:7495-26-150": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -7171,9 +7231,21 @@
     "resultat": "descartada",
     "vist": "2026-11-20"
   },
+  "raisc:7495-26-198": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
   "raisc:7495-26-199": {
     "resultat": "descartada",
     "vist": "2026-11-18"
+  },
+  "raisc:7495-26-201": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
+  },
+  "raisc:7495-26-205": {
+    "resultat": "descartada",
+    "vist": "2026-11-23"
   },
   "raisc:7705-26-002": {
     "resultat": "oportunitat",
