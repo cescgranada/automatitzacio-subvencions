@@ -375,6 +375,10 @@
     "resultat": "descartada",
     "vist": "2026-11-23"
   },
+  "boe:BOE-A-2026-24683": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "boe:BOE-B-2026-31848": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -2339,6 +2343,18 @@
     "resultat": "descartada",
     "vist": "2026-11-23"
   },
+  "boe:BOE-B-2026-38771": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "boe:BOE-B-2026-38773": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "boe:BOE-B-2026-38799": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "cido:https://cido.diba.cat/subvencions/16994225": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -2434,6 +2450,10 @@
   "cido:https://cido.diba.cat/subvencions/22483988": {
     "resultat": "descartada",
     "vist": "2026-11-13"
+  },
+  "cido:https://cido.diba.cat/subvencions/22512635": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "cido:https://cido.diba.cat/subvencions/9721324": {
     "resultat": "descartada",
@@ -7155,6 +7175,10 @@
     "resultat": "descartada",
     "vist": "2026-10-05"
   },
+  "raisc:6100-21-019": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "raisc:6201-26-001": {
     "resultat": "descartada",
     "vist": "2026-10-09"
@@ -7162,6 +7186,26 @@
   "raisc:6201-26-002": {
     "resultat": "descartada",
     "vist": "2026-11-04"
+  },
+  "raisc:6204-19-031": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6204-20-005": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6204-21-006": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6204-21-024": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6204-21-025": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "raisc:6204-26-014": {
     "resultat": "descartada",
@@ -7179,6 +7223,66 @@
     "resultat": "descartada",
     "vist": "2026-11-04"
   },
+  "raisc:6330-25-006": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6330-25-008": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6330-25-013": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6540-18-006": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6540-20-019": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6540-20-020": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-19-002": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-19-003": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-19-004": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-19-006": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-19-007": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-20-041": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-20-055": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-20-082": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6550-21-002": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "raisc:6550-26-008": {
     "resultat": "descartada",
     "vist": "2026-11-09"
@@ -7187,9 +7291,33 @@
     "resultat": "descartada",
     "vist": "2026-11-16"
   },
+  "raisc:6570-21-004": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6570-21-005": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6760-25-072": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "raisc:6760-26-107": {
     "resultat": "descartada",
     "vist": "2026-10-05"
+  },
+  "raisc:6800-19-001": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6800-19-014": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:6800-19-029": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "raisc:6800-26-023": {
     "resultat": "descartada",
@@ -7198,6 +7326,26 @@
   "raisc:6880-26-017": {
     "resultat": "descartada",
     "vist": "2026-11-23"
+  },
+  "raisc:7025-19-012": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:7025-19-013": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:7025-20-010": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:7025-20-012": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:7025-20-018": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "raisc:7495-26-150": {
     "resultat": "descartada",
@@ -7239,6 +7387,10 @@
     "resultat": "descartada",
     "vist": "2026-11-18"
   },
+  "raisc:7495-26-200": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "raisc:7495-26-201": {
     "resultat": "descartada",
     "vist": "2026-11-23"
@@ -7251,6 +7403,14 @@
     "resultat": "oportunitat",
     "vist": "2026-10-05"
   },
+  "raisc:8140-21-005": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:8390-20-002": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "raisc:8390-26-006": {
     "resultat": "oportunitat",
     "vist": "2026-10-07"
@@ -7258,6 +7418,10 @@
   "raisc:8390-26-007": {
     "resultat": "oportunitat",
     "vist": "2026-10-05"
+  },
+  "raisc:AG-23-084": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "raisc:AG-26-076": {
     "resultat": "descartada",
@@ -7278,6 +7442,22 @@
   "raisc:AG-26-107": {
     "resultat": "descartada",
     "vist": "2026-11-16"
+  },
+  "raisc:AMB01-22-008": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:AMB01-24-196": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:BE-20-067": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:BE-21-086": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "raisc:BE-26-039": {
     "resultat": "descartada",
@@ -7323,6 +7503,14 @@
     "resultat": "descartada",
     "vist": "2026-11-13"
   },
+  "raisc:JU-20-075": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:JU-21-048": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "raisc:PO-26-004": {
     "resultat": "descartada",
     "vist": "2026-10-21"
@@ -7330,6 +7518,34 @@
   "raisc:PO-26-010": {
     "resultat": "descartada",
     "vist": "2026-10-05"
+  },
+  "raisc:PR-21-023": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:PR-21-035": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:PR-21-036": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:PR-21-037": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:SA-26-052": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:SA-26-053": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
+  "raisc:SA-26-054": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions#menu-instruccions": {
     "resultat": "descartada",
@@ -7358,6 +7574,10 @@
   "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/convocatoria-del-programa-bonus-consum-barcelona-fase-1-any-2026": {
     "resultat": "descartada",
     "vist": "2026-10-05"
+  },
+  "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-en-regim-de-concurrencia-no-competitiva-al-suport-les-sales-de-musica-en-viu-de-petit-format-de-la-ciutat-de-barcelona-any-2026": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "web:https://ajuntament.barcelona.cat/ca/informacio-administrativa/subvencions/subvencions-infants-i-joves-dentre-6-i-17-anys-la-practica-esportiva-fora-dhorari-escolar-io-la-inscripcio-les-activitats-de-la-campanya-tardes-educatives-2026-2027": {
     "resultat": "descartada",
@@ -7431,6 +7651,10 @@
     "resultat": "descartada",
     "vist": "2026-10-05"
   },
+  "web:https://www.bcn.coop/category/noticies/#tornalafiradeconsumresponsableiessunnadalfetdeconomiacooperativa": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
+  },
   "web:https://www.bcn.coop/category/noticies/#tresbonespractiquespertransformariconstruirdesdedins": {
     "resultat": "descartada",
     "vist": "2026-10-05"
@@ -7446,6 +7670,10 @@
   "web:https://www.bcn.coop/economies-feministes/": {
     "resultat": "descartada",
     "vist": "2026-10-05"
+  },
+  "web:https://www.bcn.coop/fira-consum-responsable-ess-nadal-2026/": {
+    "resultat": "descartada",
+    "vist": "2026-11-24"
   },
   "web:https://www.bcn.coop/i-si-parlem-de-com-volem-treballar/": {
     "resultat": "descartada",
