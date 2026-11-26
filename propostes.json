@@ -99,6 +99,26 @@
     "termini_text": "Fins al 15 de desembre de 2026",
     "titol": "Convocatoria de subvencions per a projectes culturals que facin servir tecnologia immersiva"
   },
+  "raisc:7495-26-207": {
+    "accions": "Revisar les bases completes de l'OSIC per comprovar els requisits tècnics i de pressupost mínim exigits per a l'esdeveniment.",
+    "actualitzada": "2026-11-26",
+    "adaptacio": "Caldria vehicular-ho a través d'una mostra o festival obert al barri vinculat a la creació digital (com un cicle obert de cultura digital, videojocs o creació audiovisual comunitària lligat als projectes de cinema/arts de l'escola).",
+    "elegibilitat": "Sí",
+    "encaix": 3,
+    "estat": "descartada",
+    "font": "RAISC (Generalitat/locals)",
+    "id": "raisc:7495-26-207",
+    "import_total": "1.750.000 €",
+    "link": "https://dogc.gencat.cat/ca/document-del-dogc/?documentId=1060080",
+    "motiu_elegibilitat": "L'escola, com a cooperativa de treball associat que desenvolupa activitat econòmica, té la consideració de pime, una de les tipologies expressament admeses a la convocatòria.",
+    "organisme": "Oficina de Suport a la Iniciativa Cultural (OSIC)",
+    "primera": "2026-11-26",
+    "requisits": "Ser pime o professional autònom; organitzar un esdeveniment de contingut cultural digital a Catalunya; presentar memòria del projecte i pressupost detallat que compleixi els criteris i imports mínims de les bases.",
+    "resum": "Subvencions de l'OSIC per donar suport a l'organització de festivals, mostres, fires o jornades relacionades amb la cultura digital i les noves tecnologies creatives a Catalunya.",
+    "termini_data": "2026-12-17",
+    "termini_text": "Fins al 17 de desembre de 2026",
+    "titol": "Convocatòria de subvencions per a l'organització d'esdeveniments de contingut cultural digital a Catalunya"
+  },
   "raisc:7705-26-002": {
     "accions": "Consultar les categories i bases detallades al web d'eduCAC i valorar la presentació de projectes audiovisuals del centre (com els de 'Fem cinema' o de l'estratègia digital).",
     "actualitzada": "2026-10-05",
