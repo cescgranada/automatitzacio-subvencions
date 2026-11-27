@@ -1,6 +1,6 @@
 {
-  "data": "2026-11-26",
-  "resum": "Fonts OK 6 · amb error 2 · ítems nous 23 · candidats 1 · oportunitats 0",
+  "data": "2026-11-27",
+  "resum": "Fonts OK 6 · amb error 2 · ítems nous 20 · candidats 0 · oportunitats 0",
   "errors": [
     "Fundació la Caixa: HTTP 403; ScrapingBee HTTP 401",
     "Fundació Banc Sabadell: HTTPSConnectionPool(host='www.fundacionbancosabadell.com', port=443): Max retries exceeded with url: /convocatorias/ (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='www.fundacionbancosabadell.com', port=443): Read timed out. (read timeout=45)\")); ScrapingBee HTTP 401"
