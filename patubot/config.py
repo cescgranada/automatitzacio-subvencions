@@ -1,7 +1,10 @@
 """Configuració del Patu-Bot: tot el que es pot ajustar sense tocar la lògica."""
 import os
 
-GDRIVE_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID") or "14Fgh_2rU43gsiXhaTGE-vAFGEqSoXYfW"  # millor: definir-lo com a variable/secret
+# Carpeta de Drive on es pugen les fitxes. Deliberadament sense valor per defecte:
+# si no està definida, la pujada falla amb un missatge clar en lloc d'escriure a la
+# carpeta d'una altra entitat. Definiu-la a Settings -> Secrets and variables -> Actions.
+GDRIVE_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID")
 HISTORIAL_FILE = "historial_subvencions.json"
 OPORTUNITATS_FILE = "oportunitats.json"
 ESTAT_FILE = "ultima_execucio.json"
@@ -17,7 +20,7 @@ FONTS_MANUALS = [
 ]
 
 # Models de Gemini, per ordre de preferència (si un està retirat, prova el següent)
-GEMINI_MODELS = [m.strip() for m in os.getenv("GEMINI_MODELS") or "gemini-3.8-flash,gemini-2.5-flash".split(",") if m.strip()]
+GEMINI_MODELS = [m.strip() for m in (os.getenv("GEMINI_MODELS") or "gemini-3.8-flash,gemini-2.5-flash").split(",") if m.strip()]
 
 # --- Finestres de temps ---------------------------------------------------
 DIES_FINESTRA = 75        # convocatòries publicades en els últims N dies (RAISC/CIDO)

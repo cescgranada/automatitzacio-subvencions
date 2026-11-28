@@ -79,6 +79,10 @@ def crea_fitxa_word(v: dict, plantilla="plantilla_subvencio.docx"):
 # ---------------------------------------------------------------- Drive
 def pujar_a_drive(contingut, nom: str, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"):
     """Llança excepció si falla: el cridador decideix què fer (però ja no es perd en silenci)."""
+    if not config.GDRIVE_FOLDER_ID:
+        raise RuntimeError(
+            "GDRIVE_FOLDER_ID no està definida: posa-hi l'ID de la teva carpeta de Drive a "
+            "Settings -> Secrets and variables -> Actions -> Variables.")
     from google.oauth2 import service_account
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaIoBaseUpload
